@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
 import Sidebar from './components/Sidebar'
 import CommandPalette from './components/CommandPalette'
+import PatternInfoModal from './components/PatternInfoModal'
 import AsyncMicroservicesPattern from './patterns/AsyncMicroservicesPattern'
 import RequestResponsePattern from './patterns/RequestResponsePattern'
 import ComingSoonPattern from './components/ComingSoonPattern'
@@ -13,6 +14,7 @@ function App() {
   const [selectedPattern, setSelectedPattern] = useState('async-microservices')
   const [animationSpeed, setAnimationSpeed] = useState(1)
   const [showCommandPalette, setShowCommandPalette] = useState(false)
+  const [showPatternInfo, setShowPatternInfo] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
   const currentPattern = getPatternById(selectedPattern)
@@ -36,32 +38,15 @@ function App() {
         return <AsyncMicroservicesPattern animationSpeed={animationSpeed} />
       case 'request-response':
         return <RequestResponsePattern animationSpeed={animationSpeed} />
-      case 'saga-pattern':
-        return (
-          <ComingSoonPattern
-            patternName="Saga Pattern"
-            patternIcon="🔀"
-            patternDescription="Distributed transaction management with compensating actions and choreography-based coordination"
-          />
-        )
-      case 'cqrs':
-        return (
-          <ComingSoonPattern
-            patternName="CQRS Pattern"
-            patternIcon="📊"
-            patternDescription="Command Query Responsibility Segregation with separate read and write models for optimal performance"
-          />
-        )
-      case 'circuit-breaker':
-        return (
-          <ComingSoonPattern
-            patternName="Circuit Breaker Pattern"
-            patternIcon="🔌"
-            patternDescription="Prevent cascading failures and improve system resilience with intelligent failure detection"
-          />
-        )
       default:
-        return <AsyncMicroservicesPattern animationSpeed={animationSpeed} />
+        // For all placeholder patterns, use ComingSoonPattern with pattern data
+        return (
+          <ComingSoonPattern
+            patternName={currentPattern?.name}
+            patternIcon={currentPattern?.icon}
+            patternDescription={currentPattern?.description}
+          />
+        )
     }
   }
 
@@ -78,6 +63,12 @@ function App() {
         onClose={() => setShowCommandPalette(false)}
         onSelectPattern={setSelectedPattern}
         selectedPattern={selectedPattern}
+      />
+
+      <PatternInfoModal
+        pattern={currentPattern}
+        isOpen={showPatternInfo}
+        onClose={() => setShowPatternInfo(false)}
       />
 
       <div className="app-main">
@@ -121,6 +112,13 @@ function App() {
           </span>
           <span className="pattern-badge-name">{currentPattern?.name}</span>
           <span className="pattern-badge-desc">{currentPattern?.description}</span>
+          <button
+            className="pattern-info-btn"
+            onClick={() => setShowPatternInfo(true)}
+            title="View pattern details"
+          >
+            ℹ️
+          </button>
         </div>
 
         <AnimatePresence mode="wait">

@@ -170,6 +170,7 @@
   padding: 16px 20px;
   margin-bottom: 24px;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 [data-theme="dark"] .current-pattern-badge {
@@ -195,6 +196,31 @@
   font-size: 13px;
   color: var(--text-secondary);
   margin-left: auto;
+}
+
+.pattern-info-btn {
+  background: transparent;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.pattern-info-btn:hover {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+[data-theme="brutalism"] .pattern-info-btn:hover {
+  box-shadow: 3px 3px 0px var(--border-color);
+  transform: translate(-2px, -2px);
 }
 
 .container {

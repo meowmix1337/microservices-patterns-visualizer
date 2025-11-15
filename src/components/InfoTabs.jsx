@@ -8,6 +8,29 @@ import './InfoTabs.css'
 export default function InfoTabs({ cacheData, queueMessages, logs, onClear }) {
   const [activeTab, setActiveTab] = useState('logs')
   const [isMinimized, setIsMinimized] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+
+  // Toggle button when panel is hidden
+  if (!isVisible) {
+    return (
+      <motion.button
+        className="activity-monitor-toggle"
+        onClick={() => setIsVisible(true)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          left: 20,
+          zIndex: 1000,
+        }}
+        title="Open Activity Monitor"
+      >
+        <span className="toggle-icon">📊</span>
+        <span className="toggle-text">Activity Monitor</span>
+      </motion.button>
+    )
+  }
 
   return (
     <motion.div
@@ -15,12 +38,14 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }) {
       drag
       dragMomentum={false}
       dragElastic={0.1}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
       style={{
         position: 'fixed',
-        top: 20,
-        right: 20,
+        bottom: 20,
+        left: 20,
         zIndex: 1000,
-        width: isMinimized ? '300px' : '400px',
+        width: isMinimized ? '240px' : '320px',
         cursor: 'move'
       }}
     >
@@ -45,6 +70,13 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }) {
             title={isMinimized ? 'Maximize' : 'Minimize'}
           >
             {isMinimized ? '□' : '−'}
+          </button>
+          <button
+            className="close-btn"
+            onClick={() => setIsVisible(false)}
+            title="Close Activity Monitor"
+          >
+            ✕
           </button>
         </div>
       </div>

@@ -96,41 +96,33 @@ export default function Sidebar({ selectedPattern, onSelectPattern, onOpenComman
               )}
             </button>
 
-            <AnimatePresence>
-              {(expandedCategories[category] || isCollapsed) && (
-                <motion.div
-                  className="category-patterns"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {categoryPatterns.map((pattern) => (
-                    <button
-                      key={pattern.id}
-                      className={`pattern-item ${selectedPattern === pattern.id ? 'active' : ''}`}
-                      onClick={() => onSelectPattern(pattern.id)}
-                      title={isCollapsed ? pattern.name : pattern.description}
-                      style={{
-                        borderLeftColor: selectedPattern === pattern.id ? pattern.color : 'transparent'
-                      }}
-                    >
-                      <span className="pattern-icon">{pattern.icon}</span>
-                      {!isCollapsed && (
-                        <span className="pattern-name">{pattern.name}</span>
-                      )}
-                      {!isCollapsed && selectedPattern === pattern.id && (
-                        <motion.div
-                          className="active-indicator"
-                          layoutId="active-pattern"
-                          style={{ background: pattern.color }}
-                        />
-                      )}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {(expandedCategories[category] || isCollapsed) && (
+              <div className="category-patterns">
+                {categoryPatterns.map((pattern) => (
+                  <button
+                    key={pattern.id}
+                    className={`pattern-item ${selectedPattern === pattern.id ? 'active' : ''}`}
+                    onClick={() => onSelectPattern(pattern.id)}
+                    title={isCollapsed ? pattern.name : pattern.description}
+                    style={{
+                      borderLeftColor: selectedPattern === pattern.id ? pattern.color : 'transparent'
+                    }}
+                  >
+                    <span className="pattern-icon">{pattern.icon}</span>
+                    {!isCollapsed && (
+                      <span className="pattern-name">{pattern.name}</span>
+                    )}
+                    {!isCollapsed && selectedPattern === pattern.id && (
+                      <motion.div
+                        className="active-indicator"
+                        layoutId="active-pattern"
+                        style={{ background: pattern.color }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>

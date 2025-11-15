@@ -146,6 +146,10 @@
   transition: all 0.2s;
 }
 
+.sidebar[style*="width: 60px"] .category-header {
+  display: none;
+}
+
 .category-header:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -183,6 +187,11 @@
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
+}
+
+.sidebar[style*="width: 60px"] .pattern-item {
+  justify-content: center;
+  padding: 10px 8px;
 }
 
 .pattern-item:hover {
