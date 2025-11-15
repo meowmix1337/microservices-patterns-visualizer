@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import ServiceBox from '../components/ServiceBox'
 import MessageFlow from '../components/MessageFlow'
 import InfoTabs from '../components/InfoTabs'
+import ScenarioInfoPanel from '../components/ScenarioInfoPanel'
 import { useLogs } from '../hooks/useLogs'
 import { delay } from '../utils/delay'
 
@@ -11,20 +12,85 @@ export default function RequestResponsePattern({ animationSpeed }) {
   const { logs, addLog, clearLogs } = useLogs()
   const [runCounter, setRunCounter] = useState(0)
   const [tagsServiceStatus, setTagsServiceStatus] = useState('healthy')
+  const [activeServices, setActiveServices] = useState({})
+  const [currentScenario, setCurrentScenario] = useState(null)
 
   const speedDelay = (ms) => delay(ms / animationSpeed)
 
-  const startNewRun = (scenarioName) => {
+  const setServiceActive = (service, activityType) => {
+    setActiveServices(prev => ({ ...prev, [service]: activityType }))
+  }
+
+  const clearServiceActive = (service) => {
+    setActiveServices(prev => {
+      const updated = { ...prev }
+      delete updated[service]
+      return updated
+    })
+  }
+
+  const clearAllActiveServices = () => {
+    setActiveServices({})
+  }
+
+  const scenarios = {
+    simple: {
+      icon: '📝',
+      title: 'Simple Request-Response',
+      description: 'Basic synchronous HTTP pattern - client requests, server processes, responds immediately.',
+      keyPoints: [
+        'Single service handles the request',
+        'Direct point-to-point communication',
+        'Immediate response with low latency (~25ms)',
+      ]
+    },
+    cascade: {
+      icon: '🔗',
+      title: 'Cascade Request (Sequential)',
+      description: 'Notes service must wait for Tags service response before responding to client. Sequential dependencies add latency.',
+      keyPoints: [
+        'Client → Notes → Tags → Notes → Client (sequential)',
+        'Each service waits for downstream response',
+        'Total latency is sum of all calls (~150ms)',
+      ]
+    },
+    parallel: {
+      icon: '⚡',
+      title: 'Parallel Requests (Concurrent)',
+      description: 'Notes service makes concurrent calls to Tags AND User services, waits for both, then responds. Faster than cascade.',
+      keyPoints: [
+        'Notes service calls Tags & User simultaneously',
+        'Waits for slowest response (not sum of both)',
+        'Latency = max(tags_time, user_time) ~120ms',
+        'More efficient than sequential calls',
+      ]
+    },
+    timeout: {
+      icon: '⏱️',
+      title: 'Timeout & Fallback',
+      description: 'Resilience pattern: when Tags service is down, use timeout and fallback strategy to maintain availability.',
+      keyPoints: [
+        'Tags service failure detected via timeout',
+        'Fallback: return partial data without tags',
+        'Prevents cascading failure to client',
+        'Graceful degradation maintains availability',
+      ]
+    }
+  }
+
+  const startNewRun = (scenarioName, scenarioKey) => {
     const newRunNumber = runCounter + 1
     setRunCounter(newRunNumber)
     clearLogs()
     setMessages([])
+    clearAllActiveServices()
+    setCurrentScenario(scenarios[scenarioKey] || null)
     addLog(`━━━ Run #${newRunNumber}: ${scenarioName} ━━━`, 'info')
   }
 
   // Scenario 1: Simple direct request
   const simulateSimpleRequest = async () => {
-    startNewRun('Simple Request')
+    startNewRun('Simple Request', 'simple')
     await speedDelay(300)
     addLog('Client sends GET request', 'request')
 
@@ -61,7 +127,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
 
   // Scenario 2: Cascade/Chain request (Client -> Notes -> Tags)
   const simulateCascadeRequest = async () => {
-    startNewRun('Cascade Request')
+    startNewRun('Cascade Request', 'cascade')
     await speedDelay(300)
     addLog('Client requests note with tags', 'request')
 
@@ -125,7 +191,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
 
   // Scenario 3: Parallel requests
   const simulateParallelRequests = async () => {
-    startNewRun('Parallel Requests')
+    startNewRun('Parallel Requests', 'parallel')
     await speedDelay(300)
     addLog('Client requests note with metadata', 'request')
 
@@ -206,7 +272,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
 
   // Scenario 4: Timeout/Error handling
   const simulateTimeout = async () => {
-    startNewRun('Request Timeout')
+    startNewRun('Request Timeout', 'timeout')
     await speedDelay(300)
     setTagsServiceStatus('down')
     addLog('⚠️ Tags service is slow/unresponsive', 'warning')
@@ -296,6 +362,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
           </div>
 
           <div className="pattern-main">
+            <ScenarioInfoPanel scenario={currentScenario} />
+
             <div className="architecture">
               <ServiceBox
                 name="Client"
@@ -303,6 +371,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
                 position={{ x: 20, y: 30 }}
                 icon="👤"
                 details="Makes HTTP requests"
+                isActive={activeServices.client}
+                activityType={activeServices.client}
               />
 
               <ServiceBox
@@ -311,6 +381,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
                 position={{ x: 50, y: 30 }}
                 icon="📝"
                 details="Orchestrates requests"
+                isActive={activeServices.notesService}
+                activityType={activeServices.notesService}
               />
 
               <ServiceBox
@@ -320,6 +392,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
                 icon="🏷️"
                 status={tagsServiceStatus}
                 details="Manages tags"
+                isActive={activeServices.tagsService}
+                activityType={activeServices.tagsService}
               />
 
               <ServiceBox
@@ -328,6 +402,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
                 position={{ x: 80, y: 10 }}
                 icon="👥"
                 details="User metadata"
+                isActive={activeServices.userService}
+                activityType={activeServices.userService}
               />
 
               <AnimatePresence>

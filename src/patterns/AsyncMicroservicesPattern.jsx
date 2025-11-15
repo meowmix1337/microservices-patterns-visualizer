@@ -4,6 +4,7 @@ import ServiceBox from '../components/ServiceBox'
 import MessageFlow from '../components/MessageFlow'
 import ControlPanel from '../components/ControlPanel'
 import InfoTabs from '../components/InfoTabs'
+import ScenarioInfoPanel from '../components/ScenarioInfoPanel'
 import { useLogs } from '../hooks/useLogs'
 import { delay } from '../utils/delay'
 import { POSITIONS } from '../constants/colors'
@@ -17,24 +18,91 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   const [redisStatus, setRedisStatus] = useState('healthy')
   const [tagsServiceStatus, setTagsServiceStatus] = useState('healthy')
   const [runCounter, setRunCounter] = useState(0)
+  const [activeServices, setActiveServices] = useState({})
+  const [currentScenario, setCurrentScenario] = useState(null)
 
   const speedDelay = (ms) => delay(ms / animationSpeed)
 
-  const startNewRun = (scenarioName) => {
+  const setServiceActive = (service, activityType) => {
+    setActiveServices(prev => ({ ...prev, [service]: activityType }))
+  }
+
+  const clearServiceActive = (service) => {
+    setActiveServices(prev => {
+      const updated = { ...prev }
+      delete updated[service]
+      return updated
+    })
+  }
+
+  const clearAllActiveServices = () => {
+    setActiveServices({})
+  }
+
+  const scenarios = {
+    cacheHit: {
+      icon: '⚡',
+      title: 'Cache Hit Scenario',
+      description: 'Demonstrates the cache-aside pattern with a successful cache hit, avoiding a synchronous call to the Tags service.',
+      keyPoints: [
+        'Redis cache checked first for sub-millisecond response',
+        'Tags service call avoided when cache hit occurs',
+        'Significant latency reduction (10ms vs 150ms)',
+      ]
+    },
+    cacheMiss: {
+      icon: '🔄',
+      title: 'Cache Miss & Sync Call',
+      description: 'Shows what happens when data isn\'t cached - Notes service makes a synchronous HTTP call to Tags service, then updates the cache.',
+      keyPoints: [
+        'Cache miss triggers fallback to Tags service',
+        'Synchronous HTTP call adds latency (~150ms)',
+        'Cache updated after fetching from source',
+      ]
+    },
+    asyncUpdate: {
+      icon: '📨',
+      title: 'Async Event Processing',
+      description: 'Event-driven pattern: Tags service publishes to Kafka immediately, Notes service consumes asynchronously with configurable lag.',
+      keyPoints: [
+        'Tags service responds instantly without waiting',
+        'Event published to Kafka for async processing',
+        'Notes service consumes and updates cache independently',
+        'Consumer lag simulates real-world event processing',
+      ]
+    },
+    serviceFailure: {
+      icon: '⚠️',
+      title: 'Graceful Degradation',
+      description: 'Resilience pattern demonstrating circuit breaker behavior when Tags service is down.',
+      keyPoints: [
+        'Tags service failure detected via timeout',
+        'Circuit breaker opens to prevent cascade',
+        'Graceful degradation returns partial data',
+        'System remains available despite failure',
+      ]
+    }
+  }
+
+  const startNewRun = (scenarioName, scenarioKey) => {
     const newRunNumber = runCounter + 1
     setRunCounter(newRunNumber)
     clearLogs()
     setCacheData({})
     setQueueMessages([])
     setMessages([])
+    clearAllActiveServices()
+    setCurrentScenario(scenarios[scenarioKey] || null)
     addLog(`━━━ Run #${newRunNumber}: ${scenarioName} ━━━`, 'info')
   }
 
   const simulateCacheHit = async () => {
-    startNewRun('Cache Hit')
+    startNewRun('Cache Hit', 'cacheHit')
     await speedDelay(300)
     addLog('GET /notes request received', 'request')
 
+    setServiceActive('client', 'sending')
+    setServiceActive('notesService', 'receiving')
     const msg = {
       id: Date.now(),
       from: 'client',
@@ -46,6 +114,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
     setMessages([msg])
 
     await speedDelay(500)
+    clearServiceActive('client')
+    clearServiceActive('notesService')
 
     // Check if Redis is down
     if (redisStatus === 'down') {
@@ -99,6 +169,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
 
     addLog('Checking Redis cache...', 'info')
 
+    setServiceActive('notesService', 'sending')
+    setServiceActive('redis', 'receiving')
     const cacheCheckMsg = {
       id: Date.now(),
       from: 'notes-service',
@@ -110,8 +182,11 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
     setMessages(prev => [...prev, cacheCheckMsg])
 
     await speedDelay(500)
+    clearServiceActive('notesService')
     addLog('✅ Cache HIT! Retrieved tags from Redis', 'success')
 
+    setServiceActive('redis', 'sending')
+    setServiceActive('notesService', 'receiving')
     const cacheHitMsg = {
       id: Date.now(),
       from: 'redis',
@@ -124,6 +199,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
     setMessages(prev => [...prev, cacheHitMsg])
 
     await speedDelay(500)
+    clearServiceActive('redis')
+    clearServiceActive('notesService')
     addLog('Response sent (Latency: 1.2ms)', 'success')
 
     const responseMsg = {
@@ -142,7 +219,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateCacheMiss = async () => {
-    startNewRun('Cache Miss')
+    startNewRun('Cache Miss', 'cacheMiss')
     await speedDelay(300)
     addLog('GET /notes request received', 'request')
 
@@ -294,7 +371,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateAsyncUpdate = async () => {
-    startNewRun('Async Event')
+    startNewRun('Async Event', 'asyncUpdate')
     await speedDelay(300)
     addLog('Tag created in Tags service', 'request')
 
@@ -397,7 +474,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateServiceFailure = async () => {
-    startNewRun('Service Failure')
+    startNewRun('Service Failure', 'serviceFailure')
     await speedDelay(300)
     setTagsServiceStatus('down')
     addLog('⚠️ Tags service is DOWN!', 'error')
@@ -494,12 +571,16 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
           </div>
 
           <div className="pattern-main">
+            <ScenarioInfoPanel scenario={currentScenario} />
+
             <div className="architecture">
               <ServiceBox
                 name="Client"
                 type="client"
                 position={POSITIONS.client}
                 icon="👤"
+                isActive={activeServices.client}
+                activityType={activeServices.client}
               />
 
               <ServiceBox
@@ -508,6 +589,9 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
                 position={POSITIONS.notesService}
                 icon="📝"
                 details="Main API service with cache-aside pattern"
+                isActive={activeServices.notesService}
+                activityType={activeServices.notesService}
+                isConsumer={true}
               />
 
               <ServiceBox
@@ -517,6 +601,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
                 icon="⚡"
                 status={redisStatus}
                 details="Sub-millisecond lookups"
+                isActive={activeServices.redis}
+                activityType={activeServices.redis}
               />
 
               <ServiceBox
@@ -526,6 +612,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
                 icon="🏷️"
                 status={tagsServiceStatus}
                 details="Manages tags and publishes events"
+                isActive={activeServices.tagsService}
+                activityType={activeServices.tagsService}
               />
 
               <ServiceBox
@@ -534,6 +622,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
                 position={POSITIONS.kafka}
                 icon="📨"
                 details={`Consumer lag: ${kafkaLag}s`}
+                isActive={activeServices.kafka}
+                activityType={activeServices.kafka}
               />
 
               <AnimatePresence>
