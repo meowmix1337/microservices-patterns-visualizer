@@ -1,0 +1,152 @@
+.pattern-selector {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.pattern-selector-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.pattern-selector-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pattern-selector-header p {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.pattern-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pattern-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.pattern-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.pattern-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.pattern-card:hover {
+  background: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.pattern-card.selected {
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.pattern-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pattern-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.pattern-card-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.pattern-description {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  min-height: 40px;
+}
+
+.pattern-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.difficulty-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pattern-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pattern-tag {
+  font-size: 10px;
+  color: #64748b;
+  background: rgba(51, 65, 85, 0.5);
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: lowercase;
+}
+
+.selected-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+@media (max-width: 768px) {
+  .pattern-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .pattern-selector {
+    padding: 16px;
+  }
+
+  .pattern-selector-header h2 {
+    font-size: 20px;
+  }
+}

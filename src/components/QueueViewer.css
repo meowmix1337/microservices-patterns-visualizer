@@ -1,0 +1,58 @@
+.queue-viewer {
+  flex: 1;
+}
+
+.queue-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.queue-item {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 3px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.event-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+}
+
+.event-time {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.queue-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.queue-detail-item {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.detail-label {
+  color: #94a3b8;
+  min-width: 40px;
+}
+
+.detail-value {
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+}

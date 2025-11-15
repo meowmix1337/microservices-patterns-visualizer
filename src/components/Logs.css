@@ -1,0 +1,60 @@
+.logs {
+  flex: 1;
+}
+
+.logs-content {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 6px;
+  font-size: 12px;
+  border-left: 3px solid transparent;
+}
+
+.log-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.log-time {
+  color: #64748b;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.log-message {
+  color: #e2e8f0;
+  flex: 1;
+}
+
+.log-request {
+  border-left-color: #3b82f6;
+}
+
+.log-success {
+  border-left-color: #10b981;
+}
+
+.log-error {
+  border-left-color: #ef4444;
+}
+
+.log-warning {
+  border-left-color: #f59e0b;
+}
+
+.log-info {
+  border-left-color: #94a3b8;
+}
