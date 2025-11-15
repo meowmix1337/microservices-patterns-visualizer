@@ -6,11 +6,13 @@ import AsyncMicroservicesPattern from './patterns/AsyncMicroservicesPattern'
 import RequestResponsePattern from './patterns/RequestResponsePattern'
 import ComingSoonPattern from './components/ComingSoonPattern'
 import { getPatternById } from './patterns/patternRegistry'
+import { useTheme } from './contexts/ThemeContext'
 
 function App() {
   const [selectedPattern, setSelectedPattern] = useState('async-microservices')
   const [animationSpeed, setAnimationSpeed] = useState(1)
   const [showPatternSelector, setShowPatternSelector] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   const currentPattern = getPatternById(selectedPattern)
 
@@ -73,6 +75,14 @@ function App() {
                 />
               </label>
             </div>
+            <button
+              className="pattern-toggle-btn theme-toggle-btn"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              title={`Switch to ${theme === 'dark' ? 'Neo-Brutalism' : 'Dark'} theme`}
+            >
+              {theme === 'dark' ? '🎨 Brutalism' : '🌙 Dark'}
+            </button>
             <button
               className="pattern-toggle-btn"
               onClick={() => setShowPatternSelector(!showPatternSelector)}

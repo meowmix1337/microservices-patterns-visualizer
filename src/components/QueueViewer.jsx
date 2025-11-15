@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import './QueueViewer.css'
 
 function QueueViewer({ messages }) {
@@ -10,15 +9,11 @@ function QueueViewer({ messages }) {
         {messages.length === 0 ? (
           <div className="empty-state">No pending messages</div>
         ) : (
-          <AnimatePresence>
+          <>
             {messages.map((msg) => (
-              <motion.div
+              <div
                 key={msg.id}
                 className="queue-item"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: 100 }}
-                layout
               >
                 <div className="queue-header">
                   <span className="event-type">{msg.event}</span>
@@ -34,9 +29,9 @@ function QueueViewer({ messages }) {
                     <span className="detail-value tag-badge">{msg.tag}</span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
+          </>
         )}
       </div>
     </div>

@@ -12,14 +12,27 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   const [messages, setMessages] = useState([])
   const [cacheData, setCacheData] = useState({})
   const [queueMessages, setQueueMessages] = useState([])
-  const { logs, addLog } = useLogs()
+  const { logs, addLog, clearLogs } = useLogs()
   const [kafkaLag, setKafkaLag] = useState(0)
   const [redisStatus, setRedisStatus] = useState('healthy')
   const [tagsServiceStatus, setTagsServiceStatus] = useState('healthy')
+  const [runCounter, setRunCounter] = useState(0)
 
   const speedDelay = (ms) => delay(ms / animationSpeed)
 
+  const startNewRun = (scenarioName) => {
+    const newRunNumber = runCounter + 1
+    setRunCounter(newRunNumber)
+    clearLogs()
+    setCacheData({})
+    setQueueMessages([])
+    setMessages([])
+    addLog(`━━━ Run #${newRunNumber}: ${scenarioName} ━━━`, 'info')
+  }
+
   const simulateCacheHit = async () => {
+    startNewRun('Cache Hit')
+    await speedDelay(300)
     addLog('GET /notes request received', 'request')
 
     const msg = {
@@ -129,6 +142,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateCacheMiss = async () => {
+    startNewRun('Cache Miss')
+    await speedDelay(300)
     addLog('GET /notes request received', 'request')
 
     const msg = {
@@ -279,6 +294,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateAsyncUpdate = async () => {
+    startNewRun('Async Event')
+    await speedDelay(300)
     addLog('Tag created in Tags service', 'request')
 
     const tagCreateMsg = {
@@ -380,6 +397,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   const simulateServiceFailure = async () => {
+    startNewRun('Service Failure')
+    await speedDelay(300)
     setTagsServiceStatus('down')
     addLog('⚠️ Tags service is DOWN!', 'error')
 
@@ -458,95 +477,103 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   return (
-    <div className="container">
-      <div className="pattern-layout">
-        <div className="pattern-sidebar">
-          <ControlPanel
-            onCacheHit={simulateCacheHit}
-            onCacheMiss={simulateCacheMiss}
-            onAsyncUpdate={simulateAsyncUpdate}
-            onServiceFailure={simulateServiceFailure}
-            kafkaLag={kafkaLag}
-            setKafkaLag={setKafkaLag}
-            redisStatus={redisStatus}
-            setRedisStatus={setRedisStatus}
-          />
-
-          <InfoTabs
-            cacheData={cacheData}
-            queueMessages={queueMessages}
-            logs={logs}
-          />
-        </div>
-
-        <div className="pattern-main">
-          <div className="architecture">
-            <ServiceBox
-              name="Client"
-              type="client"
-              position={POSITIONS.client}
-              icon="👤"
+    <>
+      <div className="container">
+        <div className="pattern-layout">
+          <div className="pattern-sidebar">
+            <ControlPanel
+              onCacheHit={simulateCacheHit}
+              onCacheMiss={simulateCacheMiss}
+              onAsyncUpdate={simulateAsyncUpdate}
+              onServiceFailure={simulateServiceFailure}
+              kafkaLag={kafkaLag}
+              setKafkaLag={setKafkaLag}
+              redisStatus={redisStatus}
+              setRedisStatus={setRedisStatus}
             />
-
-            <ServiceBox
-              name="Notes Service"
-              type="service"
-              position={POSITIONS.notesService}
-              icon="📝"
-              details="Main API service with cache-aside pattern"
-            />
-
-            <ServiceBox
-              name="Redis Cache"
-              type="cache"
-              position={POSITIONS.redis}
-              icon="⚡"
-              status={redisStatus}
-              details="Sub-millisecond lookups"
-            />
-
-            <ServiceBox
-              name="Tags Service"
-              type="service"
-              position={POSITIONS.tagsService}
-              icon="🏷️"
-              status={tagsServiceStatus}
-              details="Manages tags and publishes events"
-            />
-
-            <ServiceBox
-              name="Kafka"
-              type="queue"
-              position={POSITIONS.kafka}
-              icon="📨"
-              details={`Consumer lag: ${kafkaLag}s`}
-            />
-
-            <AnimatePresence>
-              {messages.map(msg => (
-                <MessageFlow key={msg.id} message={msg} />
-              ))}
-            </AnimatePresence>
           </div>
 
-          <footer className="footer">
-            <div className="legend">
-              <div className="legend-item">
-                <span className="legend-color http"></span>
-                <span>HTTP Request (Sync)</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color event"></span>
-                <span>Kafka Event (Async)</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-color cache"></span>
-                <span>Cache Operation</span>
-              </div>
+          <div className="pattern-main">
+            <div className="architecture">
+              <ServiceBox
+                name="Client"
+                type="client"
+                position={POSITIONS.client}
+                icon="👤"
+              />
+
+              <ServiceBox
+                name="Notes Service"
+                type="service"
+                position={POSITIONS.notesService}
+                icon="📝"
+                details="Main API service with cache-aside pattern"
+              />
+
+              <ServiceBox
+                name="Redis Cache"
+                type="cache"
+                position={POSITIONS.redis}
+                icon="⚡"
+                status={redisStatus}
+                details="Sub-millisecond lookups"
+              />
+
+              <ServiceBox
+                name="Tags Service"
+                type="service"
+                position={POSITIONS.tagsService}
+                icon="🏷️"
+                status={tagsServiceStatus}
+                details="Manages tags and publishes events"
+              />
+
+              <ServiceBox
+                name="Kafka"
+                type="queue"
+                position={POSITIONS.kafka}
+                icon="📨"
+                details={`Consumer lag: ${kafkaLag}s`}
+              />
+
+              <AnimatePresence>
+                {messages.map(msg => (
+                  <MessageFlow key={msg.id} message={msg} />
+                ))}
+              </AnimatePresence>
             </div>
-          </footer>
+
+            <footer className="footer">
+              <div className="legend">
+                <div className="legend-item">
+                  <span className="legend-color http"></span>
+                  <span>HTTP Request (Sync)</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-color event"></span>
+                  <span>Kafka Event (Async)</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-color cache"></span>
+                  <span>Cache Operation</span>
+                </div>
+              </div>
+            </footer>
+          </div>
         </div>
       </div>
-    </div>
+
+      <InfoTabs
+        cacheData={cacheData}
+        queueMessages={queueMessages}
+        logs={logs}
+        onClear={() => {
+          clearLogs()
+          setCacheData({})
+          setQueueMessages([])
+          setMessages([])
+        }}
+      />
+    </>
   )
 }

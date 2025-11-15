@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import './Logs.css'
 
 function Logs({ logs }) {
@@ -20,22 +19,18 @@ function Logs({ logs }) {
         {logs.length === 0 ? (
           <div className="empty-state">No events yet</div>
         ) : (
-          <AnimatePresence>
+          <>
             {logs.map((log) => (
-              <motion.div
+              <div
                 key={log.id}
                 className={`log-item log-${log.type}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                layout
               >
                 <span className="log-icon">{getIcon(log.type)}</span>
                 <span className="log-time">{log.timestamp}</span>
                 <span className="log-message">{log.message}</span>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
+          </>
         )}
       </div>
     </div>

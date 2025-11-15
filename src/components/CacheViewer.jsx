@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import './CacheViewer.css'
 
 function CacheViewer({ data }) {
@@ -10,15 +9,11 @@ function CacheViewer({ data }) {
         {Object.keys(data).length === 0 ? (
           <div className="empty-state">Cache is empty</div>
         ) : (
-          <AnimatePresence>
+          <>
             {Object.entries(data).map(([key, value]) => (
-              <motion.div
+              <div
                 key={key}
                 className="cache-item"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                layout
               >
                 <div className="cache-key">tags:{key}</div>
                 <div className="cache-value">
@@ -30,9 +25,9 @@ function CacheViewer({ data }) {
                     JSON.stringify(value)
                   )}
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
+          </>
         )}
       </div>
     </div>
