@@ -25,11 +25,11 @@ export const patterns = [
     id: 'request-response',
     name: 'Request-Response',
     category: PATTERN_CATEGORIES.SYNC,
-    description: 'Simple synchronous HTTP request-response pattern',
+    description: 'Synchronous HTTP patterns: cascade, parallel, and timeout handling',
     icon: '↔️',
     color: '#10b981',
     difficulty: 'beginner',
-    tags: ['http', 'rest', 'sync'],
+    tags: ['http', 'rest', 'sync', 'cascade', 'parallel'],
   },
   {
     id: 'saga-pattern',
