@@ -1,0 +1,110 @@
+/**
+ * Select Component Styles
+ * Provides consistent select/dropdown styling
+ */
+
+.ui-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.ui-select-label {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.ui-select {
+  background: var(--bg-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+[data-theme="brutalism"] .ui-select {
+  box-shadow: 3px 3px 0px var(--border-color);
+}
+
+/* Hover state */
+.ui-select:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+}
+
+[data-theme="dark"] .ui-select:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+}
+
+/* Focus state */
+.ui-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="brutalism"] .ui-select:focus {
+  box-shadow: 4px 4px 0px var(--accent-primary);
+}
+
+/* Error state */
+.ui-select--error {
+  border-color: var(--error-color);
+}
+
+.ui-select--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+[data-theme="brutalism"] .ui-select--error:focus {
+  box-shadow: 4px 4px 0px var(--error-color);
+}
+
+/* Disabled state */
+.ui-select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--bg-tertiary);
+}
+
+/* Helper text */
+.ui-select-helper {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.ui-select-helper--error {
+  color: var(--error-color);
+}
+
+/* Dropdown arrow customization */
+.ui-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+[data-theme="brutalism"] .ui-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Option styling (limited support across browsers) */
+.ui-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Focus visible for accessibility */
+.ui-select:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}

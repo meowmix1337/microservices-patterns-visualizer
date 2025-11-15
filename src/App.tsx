@@ -1,13 +1,10 @@
 import { useState, useEffect, type ChangeEvent, type KeyboardEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
-import Sidebar from './components/Sidebar'
-import CommandPalette from './components/CommandPalette'
-import PatternInfoModal from './components/PatternInfoModal'
-import AsyncMicroservicesPattern from './patterns/AsyncMicroservicesPattern'
-import RequestResponsePattern from './patterns/RequestResponsePattern'
-import ComingSoonPattern from './components/ComingSoonPattern'
-import { getPatternById } from './patterns/patternRegistry'
+import { Sidebar } from './components/layout'
+import { CommandPalette, PatternInfoModal } from './components/features'
+import { AsyncMicroservicesPattern, RequestResponsePattern, getPatternById } from './patterns'
+import { ComingSoonPattern } from './components/shared'
 import { useTheme } from './contexts/ThemeContext'
 
 function App() {
