@@ -47,58 +47,60 @@ export default function RequestResponsePattern({ animationSpeed }) {
   }
 
   return (
-    <>
-      <div className="container">
-        <div className="control-panel panel">
-          <h3>🎮 Control Panel</h3>
-          <div className="scenarios">
-            <h4>Scenarios</h4>
-            <div className="button-grid">
-              <button onClick={simulateRequest} className="scenario-btn success">
-                🔄 Simple Request
-                <span className="scenario-desc">Basic HTTP request-response</span>
-              </button>
+    <div className="container">
+      <div className="pattern-layout">
+        <div className="pattern-sidebar">
+          <div className="control-panel panel">
+            <h3>🎮 Control Panel</h3>
+            <div className="scenarios">
+              <h4>Scenarios</h4>
+              <div className="button-grid">
+                <button onClick={simulateRequest} className="scenario-btn success">
+                  🔄 Simple Request
+                  <span className="scenario-desc">Basic HTTP request-response</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="architecture">
-          <ServiceBox
-            name="Client"
-            type="client"
-            position={{ x: 25, y: 50 }}
-            icon="👤"
-            details="Makes HTTP requests"
-          />
-
-          <ServiceBox
-            name="Server"
-            type="service"
-            position={{ x: 75, y: 50 }}
-            icon="🖥️"
-            details="Processes requests synchronously"
-          />
-
-          <AnimatePresence>
-            {messages.map(msg => (
-              <MessageFlow key={msg.id} message={msg} />
-            ))}
-          </AnimatePresence>
-        </div>
-
-        <div className="info-panels">
           <Logs logs={logs} />
         </div>
-      </div>
 
-      <footer className="footer">
-        <div className="legend">
-          <div className="legend-item">
-            <span className="legend-color http"></span>
-            <span>HTTP Request/Response</span>
+        <div className="pattern-main">
+          <div className="architecture">
+            <ServiceBox
+              name="Client"
+              type="client"
+              position={{ x: 25, y: 50 }}
+              icon="👤"
+              details="Makes HTTP requests"
+            />
+
+            <ServiceBox
+              name="Server"
+              type="service"
+              position={{ x: 75, y: 50 }}
+              icon="🖥️"
+              details="Processes requests synchronously"
+            />
+
+            <AnimatePresence>
+              {messages.map(msg => (
+                <MessageFlow key={msg.id} message={msg} />
+              ))}
+            </AnimatePresence>
           </div>
+
+          <footer className="footer">
+            <div className="legend">
+              <div className="legend-item">
+                <span className="legend-color http"></span>
+                <span>HTTP Request/Response</span>
+              </div>
+            </div>
+          </footer>
         </div>
-      </footer>
-    </>
+      </div>
+    </div>
   )
 }
