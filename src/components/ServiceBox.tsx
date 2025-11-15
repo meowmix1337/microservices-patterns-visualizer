@@ -1,10 +1,22 @@
 import { memo } from 'react'
 import { motion } from 'framer-motion'
 import './ServiceBox.css'
-import { COLORS } from '../constants/colors'
+import { COLORS, type Position } from '../constants/colors'
 
-function ServiceBox({ name, type, position, icon, status = 'healthy', details }) {
-  const getColor = () => {
+export type ServiceType = 'client' | 'service' | 'cache' | 'queue'
+export type ServiceStatus = 'healthy' | 'down'
+
+export interface ServiceBoxProps {
+  name: string
+  type: ServiceType
+  position: Position
+  icon: string
+  status?: ServiceStatus
+  details?: string
+}
+
+function ServiceBox({ name, type, position, icon, status = 'healthy', details }: ServiceBoxProps) {
+  const getColor = (): string => {
     if (status === 'down') return COLORS.error
     return COLORS[type] || COLORS.default
   }

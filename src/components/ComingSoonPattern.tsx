@@ -2,7 +2,13 @@ import { memo } from 'react'
 import { motion } from 'framer-motion'
 import './ComingSoonPattern.css'
 
-function ComingSoonPattern({ patternName, patternIcon, patternDescription }) {
+export interface ComingSoonPatternProps {
+  patternName: string
+  patternIcon: string
+  patternDescription: string
+}
+
+function ComingSoonPattern({ patternName, patternIcon, patternDescription }: ComingSoonPatternProps) {
   return (
     <div className="coming-soon-container">
       <motion.div

@@ -1,18 +1,29 @@
 import { memo } from 'react'
 import { motion } from 'framer-motion'
 import './PatternSelector.css'
-import { patterns, PATTERN_CATEGORIES } from '../patterns/patternRegistry'
+import { patterns, PATTERN_CATEGORIES, type PatternCategory, type Pattern, type PatternDifficulty } from '../patterns/patternRegistry'
 
-function PatternSelector({ selectedPattern, onSelectPattern }) {
-  const categoryNames = {
+export interface PatternSelectorProps {
+  selectedPattern: string
+  onSelectPattern: (patternId: string) => void
+}
+
+interface DifficultyStyle {
+  bg: string
+  color: string
+  label: string
+}
+
+function PatternSelector({ selectedPattern, onSelectPattern }: PatternSelectorProps) {
+  const categoryNames: Record<PatternCategory, string> = {
     [PATTERN_CATEGORIES.ASYNC]: 'Asynchronous',
     [PATTERN_CATEGORIES.SYNC]: 'Synchronous',
     [PATTERN_CATEGORIES.HYBRID]: 'Hybrid',
     [PATTERN_CATEGORIES.RESILIENCE]: 'Resilience',
   }
 
-  const difficultyBadge = (difficulty) => {
-    const styles = {
+  const difficultyBadge = (difficulty: PatternDifficulty) => {
+    const styles: Record<PatternDifficulty, DifficultyStyle> = {
       beginner: { bg: 'rgba(16, 185, 129, 0.1)', color: '#10b981', label: 'Beginner' },
       intermediate: { bg: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', label: 'Intermediate' },
       advanced: { bg: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', label: 'Advanced' },
@@ -28,13 +39,13 @@ function PatternSelector({ selectedPattern, onSelectPattern }) {
     )
   }
 
-  const groupedPatterns = patterns.reduce((acc, pattern) => {
+  const groupedPatterns = patterns.reduce<Record<PatternCategory, Pattern[]>>((acc, pattern) => {
     if (!acc[pattern.category]) {
       acc[pattern.category] = []
     }
     acc[pattern.category].push(pattern)
     return acc
-  }, {})
+  }, {} as Record<PatternCategory, Pattern[]>)
 
   return (
     <div className="pattern-selector">
@@ -46,7 +57,7 @@ function PatternSelector({ selectedPattern, onSelectPattern }) {
       <div className="pattern-groups">
         {Object.entries(groupedPatterns).map(([category, categoryPatterns]) => (
           <div key={category} className="pattern-group">
-            <h3 className="pattern-group-title">{categoryNames[category]}</h3>
+            <h3 className="pattern-group-title">{categoryNames[category as PatternCategory]}</h3>
             <div className="pattern-cards">
               {categoryPatterns.map((pattern) => (
                 <motion.button

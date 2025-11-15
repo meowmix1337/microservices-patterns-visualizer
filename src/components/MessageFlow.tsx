@@ -1,10 +1,24 @@
 import { memo } from 'react'
 import { motion } from 'framer-motion'
 import './MessageFlow.css'
-import { COLORS } from '../constants/colors'
+import { COLORS, type Position } from '../constants/colors'
 
-function MessageFlow({ message }) {
-  const getColor = () => {
+export interface MessageFlowData {
+  id: number
+  from: string
+  to: string
+  type: 'http' | 'event' | 'cache'
+  label: string
+  path: Position[]
+  success?: boolean
+}
+
+export interface MessageFlowProps {
+  message: MessageFlowData
+}
+
+function MessageFlow({ message }: MessageFlowProps) {
+  const getColor = (): string => {
     if (message.success === false) return COLORS.error
     if (message.success === true) return COLORS.success
 

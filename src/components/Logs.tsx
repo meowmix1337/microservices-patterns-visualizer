@@ -1,8 +1,13 @@
 import { memo } from 'react'
+import type { LogEntry, LogType } from '../hooks/useLogs'
 import './Logs.css'
 
-function Logs({ logs }) {
-  const getIcon = (type) => {
+export interface LogsProps {
+  logs: LogEntry[]
+}
+
+function Logs({ logs }: LogsProps) {
+  const getIcon = (type: LogType): string => {
     switch (type) {
       case 'request': return '📥'
       case 'success': return '✅'

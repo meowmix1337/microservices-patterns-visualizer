@@ -1,7 +1,17 @@
 import { memo } from 'react'
 import './CacheViewer.css'
 
-function CacheViewer({ data }) {
+export type CacheValue = string[] | string | number | boolean | object
+
+export interface CacheData {
+  [key: string]: CacheValue
+}
+
+export interface CacheViewerProps {
+  data: CacheData
+}
+
+function CacheViewer({ data }: CacheViewerProps) {
   return (
     <div className="cache-viewer panel">
       <h3>⚡ Redis Cache</h3>

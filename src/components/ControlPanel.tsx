@@ -1,5 +1,20 @@
-import { memo } from 'react'
+import { memo, type ChangeEvent } from 'react'
 import './ControlPanel.css'
+
+export type RedisStatus = 'healthy' | 'down'
+
+export interface ControlPanelProps {
+  onCacheHit: () => void
+  onCacheMiss: () => void
+  onAsyncUpdate: () => void
+  onServiceFailure: () => void
+  kafkaLag: number
+  setKafkaLag: (lag: number) => void
+  redisStatus: RedisStatus
+  setRedisStatus: (status: RedisStatus) => void
+  animationSpeed?: number
+  setAnimationSpeed?: (speed: number) => void
+}
 
 function ControlPanel({
   onCacheHit,
@@ -12,7 +27,21 @@ function ControlPanel({
   setRedisStatus,
   animationSpeed,
   setAnimationSpeed,
-}) {
+}: ControlPanelProps) {
+  const handleKafkaLagChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setKafkaLag(parseFloat(e.target.value))
+  }
+
+  const handleRedisStatusChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+    setRedisStatus(e.target.value as RedisStatus)
+  }
+
+  const handleAnimationSpeedChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    if (setAnimationSpeed) {
+      setAnimationSpeed(parseFloat(e.target.value))
+    }
+  }
+
   return (
     <div className="control-panel panel">
       <h3>🎮 Control Panel</h3>
@@ -70,7 +99,7 @@ function ControlPanel({
               max="5"
               step="0.5"
               value={kafkaLag}
-              onChange={(e) => setKafkaLag(parseFloat(e.target.value))}
+              onChange={handleKafkaLagChange}
               className="slider"
               aria-label="Adjust Kafka consumer lag in seconds"
             />
@@ -83,7 +112,7 @@ function ControlPanel({
             <select
               id="redis-status-select"
               value={redisStatus}
-              onChange={(e) => setRedisStatus(e.target.value)}
+              onChange={handleRedisStatusChange}
               className="select"
               aria-label="Set Redis cache status"
             >
@@ -103,7 +132,7 @@ function ControlPanel({
                 max="3"
                 step="0.25"
                 value={animationSpeed}
-                onChange={(e) => setAnimationSpeed(parseFloat(e.target.value))}
+                onChange={handleAnimationSpeedChange}
                 className="slider"
                 aria-label="Adjust animation speed multiplier"
               />
