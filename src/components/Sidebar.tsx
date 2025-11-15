@@ -1,40 +1,48 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import './Sidebar.css'
-import { patterns, PATTERN_CATEGORIES } from '../patterns/patternRegistry'
+import { patterns, PATTERN_CATEGORIES, type PatternCategory, type Pattern } from '../patterns/patternRegistry'
 
-export default function Sidebar({ selectedPattern, onSelectPattern, onOpenCommandPalette }) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [expandedCategories, setExpandedCategories] = useState({
+export interface SidebarProps {
+  selectedPattern: string
+  onSelectPattern: (patternId: string) => void
+  onOpenCommandPalette: () => void
+}
+
+type ExpandedCategories = Record<PatternCategory, boolean>
+
+export default function Sidebar({ selectedPattern, onSelectPattern, onOpenCommandPalette }: SidebarProps) {
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+  const [expandedCategories, setExpandedCategories] = useState<ExpandedCategories>({
     [PATTERN_CATEGORIES.ASYNC]: true,
     [PATTERN_CATEGORIES.SYNC]: true,
     [PATTERN_CATEGORIES.HYBRID]: false,
     [PATTERN_CATEGORIES.RESILIENCE]: false,
   })
 
-  const categoryNames = {
+  const categoryNames: Record<PatternCategory, string> = {
     [PATTERN_CATEGORIES.ASYNC]: 'Async',
     [PATTERN_CATEGORIES.SYNC]: 'Sync',
     [PATTERN_CATEGORIES.HYBRID]: 'Hybrid',
     [PATTERN_CATEGORIES.RESILIENCE]: 'Resilience',
   }
 
-  const categoryIcons = {
+  const categoryIcons: Record<PatternCategory, string> = {
     [PATTERN_CATEGORIES.ASYNC]: '⚡',
     [PATTERN_CATEGORIES.SYNC]: '↔️',
     [PATTERN_CATEGORIES.HYBRID]: '🔀',
     [PATTERN_CATEGORIES.RESILIENCE]: '🛡️',
   }
 
-  const groupedPatterns = patterns.reduce((acc, pattern) => {
+  const groupedPatterns = patterns.reduce<Record<PatternCategory, Pattern[]>>((acc, pattern) => {
     if (!acc[pattern.category]) {
       acc[pattern.category] = []
     }
     acc[pattern.category].push(pattern)
     return acc
-  }, {})
+  }, {} as Record<PatternCategory, Pattern[]>)
 
-  const toggleCategory = (category) => {
+  const toggleCategory = (category: PatternCategory): void => {
     setExpandedCategories(prev => ({
       ...prev,
       [category]: !prev[category]
@@ -82,21 +90,21 @@ export default function Sidebar({ selectedPattern, onSelectPattern, onOpenComman
           <div key={category} className="sidebar-category">
             <button
               className="category-header"
-              onClick={() => toggleCategory(category)}
-              title={isCollapsed ? categoryNames[category] : ''}
+              onClick={() => toggleCategory(category as PatternCategory)}
+              title={isCollapsed ? categoryNames[category as PatternCategory] : ''}
             >
-              <span className="category-icon">{categoryIcons[category]}</span>
+              <span className="category-icon">{categoryIcons[category as PatternCategory]}</span>
               {!isCollapsed && (
                 <>
-                  <span className="category-name">{categoryNames[category]}</span>
+                  <span className="category-name">{categoryNames[category as PatternCategory]}</span>
                   <span className="category-chevron">
-                    {expandedCategories[category] ? '▼' : '▶'}
+                    {expandedCategories[category as PatternCategory] ? '▼' : '▶'}
                   </span>
                 </>
               )}
             </button>
 
-            {(expandedCategories[category] || isCollapsed) && (
+            {(expandedCategories[category as PatternCategory] || isCollapsed) && (
               <div className="category-patterns">
                 {categoryPatterns.map((pattern) => (
                   <button

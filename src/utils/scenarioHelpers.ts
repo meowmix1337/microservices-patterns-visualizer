@@ -5,16 +5,125 @@
  * that work seamlessly with the useStepByStep hook.
  */
 
+import type { Step } from '../hooks/useStepByStep.d'
+import type { Position } from '../constants/colors'
+
+export interface CreateStepConfig {
+  explanation: string
+  action: () => Promise<void> | void
+  duration?: number
+  metadata?: Record<string, any>
+}
+
+export interface Scenario {
+  name: string
+  description: string
+  steps: Step[]
+  metadata: Record<string, any>
+  stepCount: number
+}
+
+export interface CreateScenarioConfig {
+  name: string
+  description?: string
+  steps?: Step[]
+  metadata?: Record<string, any>
+}
+
+export interface Message {
+  id: number
+  from: string
+  to: string
+  type: 'http' | 'event' | 'cache'
+  label: string
+  path: [Position, Position]
+  success?: boolean
+}
+
+export interface StepBuilderContext {
+  addLog?: (message: string, type?: 'info' | 'success' | 'error' | 'warning' | 'request') => void
+  setMessages?: React.Dispatch<React.SetStateAction<Message[]>>
+  delay?: (ms: number) => Promise<void>
+  positions?: Record<string, Position>
+}
+
+export interface RequestStepConfig {
+  from: string
+  to: string
+  label: string
+  explanation: string
+  duration?: number
+  logMessage?: string
+}
+
+export interface CacheCheckStepConfig {
+  service: string
+  cache: string
+  key: string
+  explanation: string
+  duration?: number
+}
+
+export interface CacheHitStepConfig {
+  cache: string
+  service: string
+  value: string
+  explanation: string
+  duration?: number
+}
+
+export interface CacheMissStepConfig {
+  cache: string
+  service: string
+  explanation: string
+  duration?: number
+}
+
+export interface ResponseStepConfig {
+  from: string
+  to: string
+  label: string
+  explanation: string
+  duration?: number
+  success?: boolean
+  logMessage?: string
+}
+
+export interface PublishEventStepConfig {
+  from: string
+  to: string
+  eventName: string
+  explanation: string
+  duration?: number
+}
+
+export interface CleanupStepConfig {
+  explanation: string
+  duration?: number
+  customAction?: () => Promise<void> | void
+}
+
+export interface StepBuilder {
+  requestStep: (config: RequestStepConfig) => Step
+  cacheCheckStep: (config: CacheCheckStepConfig) => Step
+  cacheHitStep: (config: CacheHitStepConfig) => Step
+  cacheMissStep: (config: CacheMissStepConfig) => Step
+  responseStep: (config: ResponseStepConfig) => Step
+  publishEventStep: (config: PublishEventStepConfig) => Step
+  cleanupStep: (config: CleanupStepConfig) => Step
+  customStep: (config: CreateStepConfig) => Step
+}
+
+export interface ValidationResult {
+  valid: boolean
+  errors: string[]
+}
+
 /**
  * Creates a step object with validation and defaults
  *
- * @param {Object} config - Step configuration
- * @param {string} config.explanation - Human-readable explanation of what happens in this step
- * @param {Function} config.action - Async function to execute for this step
- * @param {number} config.duration - How long to pause before auto-advancing (in ms, default: 1500)
- * @param {Object} config.metadata - Optional metadata for the step (analytics, debugging, etc.)
- *
- * @returns {Object} Validated step object
+ * @param config - Step configuration
+ * @returns Validated step object
  *
  * @example
  * const step = createStep({
@@ -27,7 +136,7 @@
  *   }
  * })
  */
-export const createStep = ({ explanation, action, duration = 1500, metadata = {} }) => {
+export const createStep = ({ explanation, action, duration = 1500, metadata = {} }: CreateStepConfig): Step => {
   if (!explanation || typeof explanation !== 'string') {
     console.warn('Step missing required explanation text')
   }
@@ -47,13 +156,8 @@ export const createStep = ({ explanation, action, duration = 1500, metadata = {}
 /**
  * Creates a scenario with multiple steps
  *
- * @param {Object} config - Scenario configuration
- * @param {string} config.name - Scenario name
- * @param {string} config.description - Optional scenario description
- * @param {Array<Object>} config.steps - Array of step objects (use createStep for validation)
- * @param {Object} config.metadata - Optional scenario-level metadata
- *
- * @returns {Object} Scenario object ready for useStepByStep.loadScenario()
+ * @param config - Scenario configuration
+ * @returns Scenario object ready for useStepByStep.loadScenario()
  *
  * @example
  * const cacheHitScenario = createScenario({
@@ -65,7 +169,7 @@ export const createStep = ({ explanation, action, duration = 1500, metadata = {}
  *   ]
  * })
  */
-export const createScenario = ({ name, description = '', steps = [], metadata = {} }) => {
+export const createScenario = ({ name, description = '', steps = [], metadata = {} }: CreateScenarioConfig): Scenario => {
   if (!name || typeof name !== 'string') {
     throw new Error('Scenario must have a name')
   }
@@ -87,13 +191,8 @@ export const createScenario = ({ name, description = '', steps = [], metadata = 
  * Creates a step builder for scenarios with common patterns
  * Provides a fluent API for building steps with sensible defaults
  *
- * @param {Object} context - Context object containing common dependencies
- * @param {Function} context.addLog - Function to add logs
- * @param {Function} context.setMessages - Function to set messages
- * @param {Function} context.delay - Delay function that respects animation speed
- * @param {Object} context.positions - Service position constants
- *
- * @returns {Object} Builder object with helper methods
+ * @param context - Context object containing common dependencies
+ * @returns Builder object with helper methods
  *
  * @example
  * const builder = createStepBuilder({ addLog, setMessages, delay, positions })
@@ -112,11 +211,11 @@ export const createScenario = ({ name, description = '', steps = [], metadata = 
  *   })
  * ]
  */
-export const createStepBuilder = (context) => {
+export const createStepBuilder = (context: StepBuilderContext): StepBuilder => {
   const {
     addLog = () => {},
     setMessages = () => {},
-    delay = async (ms) => new Promise(resolve => setTimeout(resolve, ms)),
+    delay = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
     positions = {}
   } = context
 
@@ -124,13 +223,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates an HTTP request step
      */
-    requestStep: ({ from, to, label, explanation, duration = 2000, logMessage }) => createStep({
+    requestStep: ({ from, to, label, explanation, duration = 2000, logMessage }: RequestStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         if (logMessage) addLog(logMessage, 'request')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from,
           to,
@@ -147,13 +246,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates a cache check step
      */
-    cacheCheckStep: ({ service, cache, key, explanation, duration = 2000 }) => createStep({
+    cacheCheckStep: ({ service, cache, key, explanation, duration = 2000 }: CacheCheckStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         addLog(`Checking ${cache} cache...`, 'info')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from: service,
           to: cache,
@@ -170,13 +269,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates a cache hit response step
      */
-    cacheHitStep: ({ cache, service, value, explanation, duration = 2000 }) => createStep({
+    cacheHitStep: ({ cache, service, value, explanation, duration = 2000 }: CacheHitStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         addLog(`✅ Cache HIT! Retrieved from ${cache}`, 'success')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from: cache,
           to: service,
@@ -194,13 +293,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates a cache miss response step
      */
-    cacheMissStep: ({ cache, service, explanation, duration = 2000 }) => createStep({
+    cacheMissStep: ({ cache, service, explanation, duration = 2000 }: CacheMissStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         addLog(`❌ Cache MISS! Need to fetch from source`, 'warning')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from: cache,
           to: service,
@@ -218,13 +317,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates a service response step
      */
-    responseStep: ({ from, to, label, explanation, duration = 2000, success = true, logMessage }) => createStep({
+    responseStep: ({ from, to, label, explanation, duration = 2000, success = true, logMessage }: ResponseStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         if (logMessage) addLog(logMessage, success ? 'success' : 'error')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from,
           to,
@@ -242,13 +341,13 @@ export const createStepBuilder = (context) => {
     /**
      * Creates an event publishing step
      */
-    publishEventStep: ({ from, to, eventName, explanation, duration = 2000 }) => createStep({
+    publishEventStep: ({ from, to, eventName, explanation, duration = 2000 }: PublishEventStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
         addLog(`Publishing ${eventName} event...`, 'info')
 
-        const message = {
+        const message: Message = {
           id: Date.now(),
           from,
           to,
@@ -265,7 +364,7 @@ export const createStepBuilder = (context) => {
     /**
      * Creates a cleanup/completion step
      */
-    cleanupStep: ({ explanation, duration = 2000, customAction }) => createStep({
+    cleanupStep: ({ explanation, duration = 2000, customAction }: CleanupStepConfig): Step => createStep({
       explanation,
       duration,
       action: async () => {
@@ -288,15 +387,15 @@ export const createStepBuilder = (context) => {
 /**
  * Helper to create a delay function that respects animation speed
  *
- * @param {number} animationSpeed - Speed multiplier (1 = normal, 2 = 2x faster)
- * @returns {Function} Delay function
+ * @param animationSpeed - Speed multiplier (1 = normal, 2 = 2x faster)
+ * @returns Delay function
  *
  * @example
  * const speedDelay = createSpeedDelay(animationSpeed)
  * await speedDelay(1000) // Will wait 1000ms at 1x speed, 500ms at 2x speed
  */
-export const createSpeedDelay = (animationSpeed = 1) => {
-  return (ms) => {
+export const createSpeedDelay = (animationSpeed: number = 1): ((ms: number) => Promise<void>) => {
+  return (ms: number) => {
     return new Promise(resolve => {
       setTimeout(resolve, ms / animationSpeed)
     })
@@ -307,8 +406,8 @@ export const createSpeedDelay = (animationSpeed = 1) => {
  * Validates a scenario definition
  * Useful for catching errors during development
  *
- * @param {Object} scenario - Scenario to validate
- * @returns {Object} Validation result with { valid: boolean, errors: string[] }
+ * @param scenario - Scenario to validate
+ * @returns Validation result with { valid: boolean, errors: string[] }
  *
  * @example
  * const result = validateScenario(myScenario)
@@ -316,8 +415,8 @@ export const createSpeedDelay = (animationSpeed = 1) => {
  *   console.error('Scenario validation failed:', result.errors)
  * }
  */
-export const validateScenario = (scenario) => {
-  const errors = []
+export const validateScenario = (scenario: Scenario | null | undefined): ValidationResult => {
+  const errors: string[] = []
 
   if (!scenario) {
     errors.push('Scenario is null or undefined')

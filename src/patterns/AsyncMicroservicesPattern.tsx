@@ -1,29 +1,36 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import ServiceBox from '../components/ServiceBox'
-import MessageFlow from '../components/MessageFlow'
-import ControlPanel from '../components/ControlPanel'
+import ServiceBox, { type ServiceStatus } from '../components/ServiceBox'
+import MessageFlow, { type MessageFlowData } from '../components/MessageFlow'
+import ControlPanel, { type RedisStatus } from '../components/ControlPanel'
 import InfoTabs from '../components/InfoTabs'
 import StepByStepControls from '../components/StepByStepControls'
 import { useLogs } from '../hooks/useLogs'
 import { useStepByStep } from '../hooks/useStepByStep'
 import { createSpeedDelay } from '../utils/scenarioHelpers'
-import { POSITIONS } from '../constants/colors'
+import { POSITIONS, type Position } from '../constants/colors'
+import type { Step } from '../hooks/useStepByStep.d'
+import type { CacheData } from '../components/CacheViewer'
+import type { QueueMessage } from '../components/QueueViewer'
 
-export default function AsyncMicroservicesPattern({ animationSpeed }) {
-  const [messages, setMessages] = useState([])
-  const [cacheData, setCacheData] = useState({})
-  const [queueMessages, setQueueMessages] = useState([])
+export interface AsyncMicroservicesPatternProps {
+  animationSpeed: number
+}
+
+export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicroservicesPatternProps) {
+  const [messages, setMessages] = useState<MessageFlowData[]>([])
+  const [cacheData, setCacheData] = useState<CacheData>({})
+  const [queueMessages, setQueueMessages] = useState<QueueMessage[]>([])
   const { logs, addLog, clearLogs } = useLogs()
-  const [kafkaLag, setKafkaLag] = useState(0)
-  const [redisStatus, setRedisStatus] = useState('healthy')
-  const [tagsServiceStatus, setTagsServiceStatus] = useState('healthy')
-  const [runCounter, setRunCounter] = useState(0)
+  const [kafkaLag, setKafkaLag] = useState<number>(0)
+  const [redisStatus, setRedisStatus] = useState<RedisStatus>('healthy')
+  const [tagsServiceStatus, setTagsServiceStatus] = useState<ServiceStatus>('healthy')
+  const [runCounter, setRunCounter] = useState<number>(0)
 
   // Use the step-by-step hook
   const stepControl = useStepByStep({
     animationSpeed,
-    onScenarioStart: (name) => {
+    onScenarioStart: (name: string) => {
       const newRunNumber = runCounter + 1
       setRunCounter(newRunNumber)
       clearLogs()
@@ -37,15 +44,15 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   const speedDelay = createSpeedDelay(animationSpeed)
 
   // Cache Hit scenario - step-by-step
-  const simulateCacheHit = () => {
+  const simulateCacheHit = (): void => {
 
-    const cacheHitSteps = [
+    const cacheHitSteps: Step[] = [
       {
         explanation: "Client initiates a GET request to fetch notes from the Notes Service",
         duration: 2000,
         action: async () => {
           addLog('GET /notes request received', 'request')
-          const msg = {
+          const msg: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -62,7 +69,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Checking Redis cache...', 'info')
-          const cacheCheckMsg = {
+          const cacheCheckMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'redis',
@@ -79,7 +86,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('✅ Cache HIT! Retrieved tags from Redis', 'success')
-          const cacheHitMsg = {
+          const cacheHitMsg: MessageFlowData = {
             id: Date.now(),
             from: 'redis',
             to: 'notes-service',
@@ -97,7 +104,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Response sent (Latency: 1.2ms)', 'success')
-          const responseMsg = {
+          const responseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'client',
@@ -125,14 +132,14 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
   }
 
   // Cache Miss scenario - step-by-step
-  const simulateCacheMiss = () => {
-    const cacheMissSteps = [
+  const simulateCacheMiss = (): void => {
+    const cacheMissSteps: Step[] = [
       {
         explanation: "Client sends GET request to Notes Service for note data",
         duration: 2000,
         action: async () => {
           addLog('GET /notes request received', 'request')
-          const msg = {
+          const msg: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -149,7 +156,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Checking Redis cache...', 'info')
-          const cacheCheckMsg = {
+          const cacheCheckMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'redis',
@@ -166,7 +173,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('❌ Cache MISS! Need to fetch from Tags service', 'warning')
-          const cacheMissMsg = {
+          const cacheMissMsg: MessageFlowData = {
             id: Date.now(),
             from: 'redis',
             to: 'notes-service',
@@ -184,7 +191,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Calling Tags service (SYNC)...', 'info')
-          const syncCallMsg = {
+          const syncCallMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'tags-service',
@@ -201,7 +208,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Tags service responded (25ms)', 'info')
-          const syncResponseMsg = {
+          const syncResponseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'tags-service',
             to: 'notes-service',
@@ -219,7 +226,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Updating Redis cache...', 'info')
-          const updateCacheMsg = {
+          const updateCacheMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'redis',
@@ -237,7 +244,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Response sent (Latency: 150ms)', 'success')
-          const responseMsg = {
+          const responseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'client',
@@ -263,17 +270,17 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
     stepControl.loadScenario('Cache Miss (Slower Path)', cacheMissSteps)
   }
 
-  const simulateAsyncUpdate = () => {
+  const simulateAsyncUpdate = (): void => {
     // Store the newQueueMsg in a closure so we can reference it across steps
-    let newQueueMsg = null
+    let newQueueMsg: QueueMessage | null = null
 
-    const asyncUpdateSteps = [
+    const asyncUpdateSteps: Step[] = [
       {
         explanation: "Client sends POST request to create a new tag in Tags Service",
         duration: 2000,
         action: async () => {
           addLog('Tag created in Tags service', 'request')
-          const tagCreateMsg = {
+          const tagCreateMsg: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'tags-service',
@@ -293,7 +300,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
           await speedDelay(300)
 
           addLog('Publishing event to Kafka (ASYNC)...', 'info')
-          const kafkaPublishMsg = {
+          const kafkaPublishMsg: MessageFlowData = {
             id: Date.now(),
             from: 'tags-service',
             to: 'kafka',
@@ -311,7 +318,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
             tag: 'new-tag',
             timestamp: new Date().toLocaleTimeString()
           }
-          setQueueMessages(prev => [...prev, newQueueMsg])
+          setQueueMessages(prev => [...prev, newQueueMsg!])
           await speedDelay(500)
         }
       },
@@ -320,7 +327,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('✅ Response sent immediately (no waiting!)', 'success')
-          const responseMsg = {
+          const responseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'tags-service',
             to: 'client',
@@ -346,7 +353,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog(`Notes service consuming event (lag: ${kafkaLag}s)...`, 'info')
-          const kafkaConsumeMsg = {
+          const kafkaConsumeMsg: MessageFlowData = {
             id: Date.now(),
             from: 'kafka',
             to: 'notes-service',
@@ -358,7 +365,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
 
           // Remove from queue
           if (newQueueMsg) {
-            setQueueMessages(prev => prev.filter(m => m.id !== newQueueMsg.id))
+            setQueueMessages(prev => prev.filter(m => m.id !== newQueueMsg!.id))
           }
           await speedDelay(500)
         }
@@ -375,7 +382,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
           }
 
           addLog('Updating Redis cache from event...', 'info')
-          const updateCacheMsg = {
+          const updateCacheMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'redis',
@@ -387,7 +394,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
 
           setCacheData(prev => ({
             ...prev,
-            'note:789': [...(prev['note:789'] || []), 'new-tag']
+            'note:789': [...(Array.isArray(prev['note:789']) ? prev['note:789'] as string[] : []), 'new-tag']
           }))
           await speedDelay(500)
         }
@@ -408,8 +415,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
     stepControl.loadScenario('Async Event-Driven Update', asyncUpdateSteps)
   }
 
-  const simulateServiceFailure = () => {
-    const serviceFailureSteps = [
+  const simulateServiceFailure = (): void => {
+    const serviceFailureSteps: Step[] = [
       {
         explanation: "Tags Service goes DOWN! This simulates a real service outage scenario",
         duration: 2000,
@@ -424,7 +431,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('GET /notes request received', 'request')
-          const msg = {
+          const msg: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -441,7 +448,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Checking Redis cache...', 'info')
-          const cacheCheckMsg = {
+          const cacheCheckMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'redis',
@@ -458,7 +465,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Cache MISS - attempting Tags service...', 'warning')
-          const cacheMissMsg = {
+          const cacheMissMsg: MessageFlowData = {
             id: Date.now(),
             from: 'redis',
             to: 'notes-service',
@@ -476,7 +483,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Calling Tags service...', 'info')
-          const syncCallMsg = {
+          const syncCallMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'tags-service',
@@ -501,7 +508,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Graceful degradation: returning notes without tags', 'warning')
-          const responseMsg = {
+          const responseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'client',

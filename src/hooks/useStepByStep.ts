@@ -1,4 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import type {
+  Step,
+  UseStepByStepOptions,
+  StepByStepControl,
+  LoadScenarioConfig
+} from './useStepByStep.d.ts'
 
 /**
  * Custom hook for managing step-by-step scenario execution
@@ -6,13 +12,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
  * This hook provides a complete solution for interactive, step-by-step visualizations
  * with support for auto-play, keyboard shortcuts, and manual navigation.
  *
- * @param {Object} options - Configuration options
- * @param {number} options.animationSpeed - Speed multiplier for animations (default: 1)
- * @param {Function} options.onScenarioStart - Callback when a new scenario starts
- * @param {Function} options.onScenarioComplete - Callback when scenario completes
- * @param {Function} options.onStepChange - Callback on each step change
- *
- * @returns {Object} Step-by-step control interface
+ * @param options - Configuration options
+ * @returns Step-by-step control interface
  *
  * @example
  * const stepControl = useStepByStep({
@@ -24,7 +25,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
  * // Load and start a scenario
  * stepControl.loadScenario('Cache Hit Demo', cacheHitSteps)
  */
-export const useStepByStep = (options = {}) => {
+export const useStepByStep = (options: UseStepByStepOptions = {}): StepByStepControl => {
   const {
     animationSpeed = 1,
     onScenarioStart,
@@ -33,21 +34,21 @@ export const useStepByStep = (options = {}) => {
   } = options
 
   // Core state management
-  const [currentStep, setCurrentStep] = useState(0)
-  const [steps, setSteps] = useState([])
-  const [isAutoPlaying, setIsAutoPlaying] = useState(false)
-  const [isRunning, setIsRunning] = useState(false)
-  const [scenarioName, setScenarioName] = useState('')
+  const [currentStep, setCurrentStep] = useState<number>(0)
+  const [steps, setSteps] = useState<Step[]>([])
+  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false)
+  const [isRunning, setIsRunning] = useState<boolean>(false)
+  const [scenarioName, setScenarioName] = useState<string>('')
 
   // Refs for cleanup and async operations
-  const autoPlayTimer = useRef(null)
-  const isExecutingStep = useRef(false)
+  const autoPlayTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isExecutingStep = useRef<boolean>(false)
 
   /**
    * Execute a single step's action function
    * Prevents concurrent step execution and handles errors gracefully
    */
-  const executeStep = useCallback(async (step) => {
+  const executeStep = useCallback(async (step: Step): Promise<void> => {
     if (!step || !step.action) return
 
     // Prevent concurrent step execution
@@ -72,7 +73,7 @@ export const useStepByStep = (options = {}) => {
    * Navigate to the next step
    * Executes the step's action and advances the counter
    */
-  const goToNextStep = useCallback(async () => {
+  const goToNextStep = useCallback(async (): Promise<void> => {
     if (currentStep >= steps.length) return
 
     const nextStep = currentStep + 1
@@ -100,7 +101,7 @@ export const useStepByStep = (options = {}) => {
    * Note: Does NOT re-execute previous steps, only shows the explanation
    * This is intentional to avoid complex state rollback logic
    */
-  const goToPreviousStep = useCallback(() => {
+  const goToPreviousStep = useCallback((): void => {
     if (currentStep <= 1) return
 
     const prevStep = currentStep - 1
@@ -115,35 +116,33 @@ export const useStepByStep = (options = {}) => {
    * Toggle auto-play mode
    * When enabled, automatically advances through steps based on their duration
    */
-  const toggleAutoPlay = useCallback(() => {
+  const toggleAutoPlay = useCallback((): void => {
     setIsAutoPlaying(prev => !prev)
   }, [])
 
   /**
    * Start auto-play mode
    */
-  const startAutoPlay = useCallback(() => {
+  const startAutoPlay = useCallback((): void => {
     setIsAutoPlaying(true)
   }, [])
 
   /**
    * Pause auto-play mode
    */
-  const pauseAutoPlay = useCallback(() => {
+  const pauseAutoPlay = useCallback((): void => {
     setIsAutoPlaying(false)
   }, [])
 
   /**
    * Load a new scenario with its steps
    * Resets all state and prepares for execution
-   *
-   * @param {string} name - Name of the scenario
-   * @param {Array} scenarioSteps - Array of step objects
-   * @param {Object} config - Optional configuration
-   * @param {boolean} config.autoStart - Auto-start the scenario (default: true)
-   * @param {boolean} config.autoPlay - Auto-play through steps (default: false)
    */
-  const loadScenario = useCallback(async (name, scenarioSteps, config = {}) => {
+  const loadScenario = useCallback(async (
+    name: string,
+    scenarioSteps: Step[],
+    config: LoadScenarioConfig = {}
+  ): Promise<void> => {
     const { autoStart = true, autoPlay = false } = config
 
     // Clear any existing timers
@@ -183,7 +182,7 @@ export const useStepByStep = (options = {}) => {
    * Stop the current scenario
    * Clears all state and timers
    */
-  const stopScenario = useCallback(() => {
+  const stopScenario = useCallback((): void => {
     if (autoPlayTimer.current) {
       clearTimeout(autoPlayTimer.current)
       autoPlayTimer.current = null
@@ -201,7 +200,7 @@ export const useStepByStep = (options = {}) => {
    * Reset scenario to beginning
    * Keeps the same steps but resets to step 1
    */
-  const resetScenario = useCallback(async () => {
+  const resetScenario = useCallback(async (): Promise<void> => {
     if (steps.length === 0) return
 
     if (autoPlayTimer.current) {
@@ -225,7 +224,7 @@ export const useStepByStep = (options = {}) => {
    * Jump to a specific step
    * Note: Does not execute intermediate steps
    */
-  const goToStep = useCallback(async (stepNumber) => {
+  const goToStep = useCallback(async (stepNumber: number): Promise<void> => {
     if (stepNumber < 1 || stepNumber > steps.length) return
 
     setCurrentStep(stepNumber)
@@ -276,12 +275,13 @@ export const useStepByStep = (options = {}) => {
    * Space: Toggle auto-play
    */
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent): void => {
       // Only handle keyboard shortcuts when a scenario is running
       if (!isRunning) return
 
       // Prevent shortcuts if user is typing in an input
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         return
       }
 

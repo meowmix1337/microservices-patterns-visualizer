@@ -1,12 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type KeyboardEvent, type ChangeEvent, type MouseEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './CommandPalette.css'
-import { patterns } from '../patterns/patternRegistry'
+import { patterns, type Pattern } from '../patterns/patternRegistry'
 
-export default function CommandPalette({ isOpen, onClose, onSelectPattern, selectedPattern }) {
-  const [search, setSearch] = useState('')
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const inputRef = useRef(null)
+export interface CommandPaletteProps {
+  isOpen: boolean
+  onClose: () => void
+  onSelectPattern: (patternId: string) => void
+  selectedPattern: string
+}
+
+export default function CommandPalette({ isOpen, onClose, onSelectPattern, selectedPattern }: CommandPaletteProps) {
+  const [search, setSearch] = useState<string>('')
+  const [selectedIndex, setSelectedIndex] = useState<number>(0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const filteredPatterns = patterns.filter(pattern =>
     pattern.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -26,7 +33,7 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
     setSelectedIndex(0)
   }, [search])
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       setSelectedIndex(prev => (prev + 1) % filteredPatterns.length)
@@ -43,6 +50,27 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
     }
   }
 
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setSearch(e.target.value)
+  }
+
+  const handlePatternClick = (patternId: string): void => {
+    onSelectPattern(patternId)
+    onClose()
+  }
+
+  const handleMouseEnter = (index: number): void => {
+    setSelectedIndex(index)
+  }
+
+  const handleOverlayClick = (): void => {
+    onClose()
+  }
+
+  const handlePaletteClick = (e: MouseEvent<HTMLDivElement>): void => {
+    e.stopPropagation()
+  }
+
   if (!isOpen) return null
 
   return (
@@ -52,7 +80,7 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={handleOverlayClick}
       >
         <motion.div
           className="command-palette"
@@ -60,7 +88,7 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
           transition={{ duration: 0.2 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={handlePaletteClick}
         >
           <div className="command-palette-header">
             <span className="search-icon-large">🔍</span>
@@ -70,7 +98,7 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
               className="command-palette-input"
               placeholder="Search patterns..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
             />
             <button className="close-btn" onClick={onClose} title="Close (Esc)">
@@ -90,11 +118,8 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
                 <button
                   key={pattern.id}
                   className={`palette-pattern-item ${index === selectedIndex ? 'selected' : ''} ${selectedPattern === pattern.id ? 'current' : ''}`}
-                  onClick={() => {
-                    onSelectPattern(pattern.id)
-                    onClose()
-                  }}
-                  onMouseEnter={() => setSelectedIndex(index)}
+                  onClick={() => handlePatternClick(pattern.id)}
+                  onMouseEnter={() => handleMouseEnter(index)}
                 >
                   <div className="palette-pattern-main">
                     <span className="palette-pattern-icon" style={{ color: pattern.color }}>

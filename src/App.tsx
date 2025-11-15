@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ChangeEvent, type KeyboardEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
 import Sidebar from './components/Sidebar'
@@ -11,17 +11,17 @@ import { getPatternById } from './patterns/patternRegistry'
 import { useTheme } from './contexts/ThemeContext'
 
 function App() {
-  const [selectedPattern, setSelectedPattern] = useState('async-microservices')
-  const [animationSpeed, setAnimationSpeed] = useState(1)
-  const [showCommandPalette, setShowCommandPalette] = useState(false)
-  const [showPatternInfo, setShowPatternInfo] = useState(false)
+  const [selectedPattern, setSelectedPattern] = useState<string>('async-microservices')
+  const [animationSpeed, setAnimationSpeed] = useState<number>(1)
+  const [showCommandPalette, setShowCommandPalette] = useState<boolean>(false)
+  const [showPatternInfo, setShowPatternInfo] = useState<boolean>(false)
   const { theme, toggleTheme } = useTheme()
 
   const currentPattern = getPatternById(selectedPattern)
 
   // Keyboard shortcut for command palette (Cmd+K / Ctrl+K)
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent): void => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         setShowCommandPalette(true)
@@ -31,6 +31,10 @@ function App() {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  const handleAnimationSpeedChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setAnimationSpeed(parseFloat(e.target.value))
+  }
 
   const renderPattern = () => {
     switch (selectedPattern) {
@@ -42,9 +46,9 @@ function App() {
         // For all placeholder patterns, use ComingSoonPattern with pattern data
         return (
           <ComingSoonPattern
-            patternName={currentPattern?.name}
-            patternIcon={currentPattern?.icon}
-            patternDescription={currentPattern?.description}
+            patternName={currentPattern?.name || 'Pattern'}
+            patternIcon={currentPattern?.icon || '📋'}
+            patternDescription={currentPattern?.description || 'Coming soon...'}
           />
         )
     }
@@ -66,7 +70,7 @@ function App() {
       />
 
       <PatternInfoModal
-        pattern={currentPattern}
+        pattern={currentPattern || null}
         isOpen={showPatternInfo}
         onClose={() => setShowPatternInfo(false)}
       />
@@ -88,7 +92,7 @@ function App() {
                     max="3"
                     step="0.25"
                     value={animationSpeed}
-                    onChange={(e) => setAnimationSpeed(parseFloat(e.target.value))}
+                    onChange={handleAnimationSpeedChange}
                     className="slider-compact"
                     aria-label="Adjust global animation speed"
                   />

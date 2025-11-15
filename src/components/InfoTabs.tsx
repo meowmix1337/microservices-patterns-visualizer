@@ -1,14 +1,24 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import CacheViewer from './CacheViewer'
-import QueueViewer from './QueueViewer'
+import CacheViewer, { type CacheData } from './CacheViewer'
+import QueueViewer, { type QueueMessage } from './QueueViewer'
 import Logs from './Logs'
+import type { LogEntry } from '../hooks/useLogs'
 import './InfoTabs.css'
 
-export default function InfoTabs({ cacheData, queueMessages, logs, onClear }) {
-  const [activeTab, setActiveTab] = useState('logs')
-  const [isMinimized, setIsMinimized] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+export type TabType = 'logs' | 'cache' | 'queue'
+
+export interface InfoTabsProps {
+  cacheData: CacheData
+  queueMessages: QueueMessage[]
+  logs: LogEntry[]
+  onClear?: () => void
+}
+
+export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: InfoTabsProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('logs')
+  const [isMinimized, setIsMinimized] = useState<boolean>(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
 
   // Toggle button when panel is hidden
   if (!isVisible) {

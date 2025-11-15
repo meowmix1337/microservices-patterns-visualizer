@@ -8,9 +8,27 @@ export const PATTERN_CATEGORIES = {
   SYNC: 'sync',
   HYBRID: 'hybrid',
   RESILIENCE: 'resilience',
+} as const
+
+export type PatternCategory = typeof PATTERN_CATEGORIES[keyof typeof PATTERN_CATEGORIES]
+
+export type PatternDifficulty = 'beginner' | 'intermediate' | 'advanced'
+
+export interface Pattern {
+  id: string
+  name: string
+  category: PatternCategory
+  description: string
+  icon: string
+  color: string
+  difficulty: PatternDifficulty
+  tags: string[]
+  benefits: string[]
+  tradeoffs: string[]
+  useCases: string[]
 }
 
-export const patterns = [
+export const patterns: Pattern[] = [
   {
     id: 'async-microservices',
     name: 'Async Microservices',
@@ -293,10 +311,10 @@ export const patterns = [
   },
 ]
 
-export const getPatternById = (id) => {
+export const getPatternById = (id: string): Pattern | undefined => {
   return patterns.find(p => p.id === id)
 }
 
-export const getPatternsByCategory = (category) => {
+export const getPatternsByCategory = (category: PatternCategory): Pattern[] => {
   return patterns.filter(p => p.category === category)
 }

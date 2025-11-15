@@ -1,7 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import './ScenarioInfoPanel.css'
 
-export default function ScenarioInfoPanel({ scenario, isVisible = true }) {
+export interface ScenarioInfo {
+  icon?: string
+  title: string
+  description: string
+  keyPoints?: string[]
+}
+
+export interface ScenarioInfoPanelProps {
+  scenario: ScenarioInfo | null
+  isVisible?: boolean
+}
+
+export default function ScenarioInfoPanel({ scenario, isVisible = true }: ScenarioInfoPanelProps) {
   if (!isVisible || !scenario) return null
 
   return (

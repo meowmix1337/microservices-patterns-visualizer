@@ -1,7 +1,19 @@
 import { memo } from 'react'
 import './QueueViewer.css'
 
-function QueueViewer({ messages }) {
+export interface QueueMessage {
+  id: number
+  event: string
+  timestamp: string
+  noteId: string
+  tag: string
+}
+
+export interface QueueViewerProps {
+  messages: QueueMessage[]
+}
+
+function QueueViewer({ messages }: QueueViewerProps) {
   return (
     <div className="queue-viewer panel">
       <h3>📨 Kafka Queue</h3>

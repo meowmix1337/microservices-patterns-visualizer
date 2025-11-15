@@ -1,23 +1,29 @@
 import { useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import ServiceBox from '../components/ServiceBox'
-import MessageFlow from '../components/MessageFlow'
+import ServiceBox, { type ServiceStatus } from '../components/ServiceBox'
+import MessageFlow, { type MessageFlowData } from '../components/MessageFlow'
 import InfoTabs from '../components/InfoTabs'
 import StepByStepControls from '../components/StepByStepControls'
 import { useLogs } from '../hooks/useLogs'
 import { useStepByStep } from '../hooks/useStepByStep'
 import { createSpeedDelay } from '../utils/scenarioHelpers'
+import type { Step } from '../hooks/useStepByStep.d'
+import type { Position } from '../constants/colors'
 
-export default function RequestResponsePattern({ animationSpeed }) {
-  const [messages, setMessages] = useState([])
+export interface RequestResponsePatternProps {
+  animationSpeed: number
+}
+
+export default function RequestResponsePattern({ animationSpeed }: RequestResponsePatternProps) {
+  const [messages, setMessages] = useState<MessageFlowData[]>([])
   const { logs, addLog, clearLogs } = useLogs()
-  const [runCounter, setRunCounter] = useState(0)
-  const [tagsServiceStatus, setTagsServiceStatus] = useState('healthy')
+  const [runCounter, setRunCounter] = useState<number>(0)
+  const [tagsServiceStatus, setTagsServiceStatus] = useState<ServiceStatus>('healthy')
 
   // Step-by-step control hook
   const stepControl = useStepByStep({
     animationSpeed,
-    onScenarioStart: (name) => {
+    onScenarioStart: (name: string) => {
       const newRunNumber = runCounter + 1
       setRunCounter(newRunNumber)
       clearLogs()
@@ -29,14 +35,14 @@ export default function RequestResponsePattern({ animationSpeed }) {
   const speedDelay = createSpeedDelay(animationSpeed)
 
   // Scenario 1: Simple direct request
-  const simulateSimpleRequest = () => {
-    const simpleRequestSteps = [
+  const simulateSimpleRequest = (): void => {
+    const simpleRequestSteps: Step[] = [
       {
         explanation: "Client sends GET request to Notes Service - basic synchronous HTTP request",
         duration: 2000,
         action: async () => {
           addLog('Client sends GET request', 'request')
-          const requestMsg = {
+          const requestMsg: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -61,7 +67,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Response sent (25ms)', 'success')
-          const responseMsg = {
+          const responseMsg: MessageFlowData = {
             id: Date.now(),
             from: 'notes-service',
             to: 'client',
@@ -88,14 +94,14 @@ export default function RequestResponsePattern({ animationSpeed }) {
   }
 
   // Scenario 2: Cascade/Chain request (Client -> Notes -> Tags)
-  const simulateCascadeRequest = () => {
-    const cascadeRequestSteps = [
+  const simulateCascadeRequest = (): void => {
+    const cascadeRequestSteps: Step[] = [
       {
         explanation: "Client requests note with tags - this triggers a cascade of sequential service calls",
         duration: 2000,
         action: async () => {
           addLog('Client requests note with tags', 'request')
-          const clientToNotes = {
+          const clientToNotes: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -112,7 +118,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Notes service calls Tags service (SYNC)', 'info')
-          const notesToTags = {
+          const notesToTags: MessageFlowData = {
             id: Date.now() + 1,
             from: 'notes-service',
             to: 'tags-service',
@@ -129,7 +135,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Tags service responds (15ms)', 'info')
-          const tagsToNotes = {
+          const tagsToNotes: MessageFlowData = {
             id: Date.now() + 2,
             from: 'tags-service',
             to: 'notes-service',
@@ -147,7 +153,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Notes service merges data and responds', 'success')
-          const notesToClient = {
+          const notesToClient: MessageFlowData = {
             id: Date.now() + 3,
             from: 'notes-service',
             to: 'client',
@@ -175,14 +181,14 @@ export default function RequestResponsePattern({ animationSpeed }) {
   }
 
   // Scenario 3: Parallel requests
-  const simulateParallelRequests = () => {
-    const parallelRequestsSteps = [
+  const simulateParallelRequests = (): void => {
+    const parallelRequestsSteps: Step[] = [
       {
         explanation: "Client requests note with full metadata (tags + author info)",
         duration: 2000,
         action: async () => {
           addLog('Client requests note with metadata', 'request')
-          const clientToNotes = {
+          const clientToNotes: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -199,7 +205,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2500,
         action: async () => {
           addLog('Notes service makes parallel calls', 'info')
-          const notesToTags = {
+          const notesToTags: MessageFlowData = {
             id: Date.now() + 1,
             from: 'notes-service',
             to: 'tags-service',
@@ -207,7 +213,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
             label: 'GET /tags?noteId=456',
             path: [{ x: 50, y: 30 }, { x: 80, y: 50 }]
           }
-          const notesToUser = {
+          const notesToUser: MessageFlowData = {
             id: Date.now() + 2,
             from: 'notes-service',
             to: 'user-service',
@@ -224,7 +230,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Both services respond (waiting for slowest)', 'info')
-          const tagsToNotes = {
+          const tagsToNotes: MessageFlowData = {
             id: Date.now() + 3,
             from: 'tags-service',
             to: 'notes-service',
@@ -233,7 +239,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
             path: [{ x: 80, y: 50 }, { x: 50, y: 30 }],
             success: true
           }
-          const userToNotes = {
+          const userToNotes: MessageFlowData = {
             id: Date.now() + 4,
             from: 'user-service',
             to: 'notes-service',
@@ -251,7 +257,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Notes service aggregates and responds', 'success')
-          const notesToClient = {
+          const notesToClient: MessageFlowData = {
             id: Date.now() + 5,
             from: 'notes-service',
             to: 'client',
@@ -279,8 +285,8 @@ export default function RequestResponsePattern({ animationSpeed }) {
   }
 
   // Scenario 4: Timeout/Error handling
-  const simulateTimeout = () => {
-    const timeoutSteps = [
+  const simulateTimeout = (): void => {
+    const timeoutSteps: Step[] = [
       {
         explanation: "Tags Service becomes slow/unresponsive - simulating a real-world service degradation",
         duration: 2000,
@@ -295,7 +301,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Client sends request', 'request')
-          const clientToNotes = {
+          const clientToNotes: MessageFlowData = {
             id: Date.now(),
             from: 'client',
             to: 'notes-service',
@@ -312,7 +318,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Notes service calls Tags service...', 'info')
-          const notesToTags = {
+          const notesToTags: MessageFlowData = {
             id: Date.now() + 1,
             from: 'notes-service',
             to: 'tags-service',
@@ -338,7 +344,7 @@ export default function RequestResponsePattern({ animationSpeed }) {
         duration: 2000,
         action: async () => {
           addLog('Returning note without tags', 'warning')
-          const notesToClient = {
+          const notesToClient: MessageFlowData = {
             id: Date.now() + 2,
             from: 'notes-service',
             to: 'client',

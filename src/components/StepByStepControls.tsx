@@ -1,5 +1,16 @@
 import './StepByStepControls.css'
 
+export interface StepByStepControlsProps {
+  currentStep: number
+  totalSteps: number
+  stepExplanation: string
+  onNext: () => void
+  onPrevious: () => void
+  onToggleAutoPlay: () => void
+  isAutoPlaying: boolean
+  isRunning: boolean
+}
+
 export default function StepByStepControls({
   currentStep,
   totalSteps,
@@ -9,7 +20,7 @@ export default function StepByStepControls({
   onToggleAutoPlay,
   isAutoPlaying,
   isRunning
-}) {
+}: StepByStepControlsProps) {
   if (!isRunning) return null
 
   return (

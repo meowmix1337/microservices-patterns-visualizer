@@ -1,10 +1,17 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type MouseEvent } from 'framer-motion'
+import type { Pattern } from '../patterns/patternRegistry'
 import './PatternInfoModal.css'
 
-export default function PatternInfoModal({ pattern, isOpen, onClose }) {
+export interface PatternInfoModalProps {
+  pattern: Pattern | null
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function PatternInfoModal({ pattern, isOpen, onClose }: PatternInfoModalProps) {
   if (!isOpen || !pattern) return null
 
-  const handleBackdropClick = (e) => {
+  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>): void => {
     if (e.target === e.currentTarget) {
       onClose()
     }
