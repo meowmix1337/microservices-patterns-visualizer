@@ -1,0 +1,241 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: var(--border-width) solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .sidebar {
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="brutalism"] .sidebar {
+  box-shadow: var(--shadow);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: var(--border-width) solid var(--border-color);
+  min-height: 60px;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar-toggle:hover {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+[data-theme="brutalism"] .sidebar-toggle:hover {
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+.command-palette-trigger {
+  margin: 12px;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.command-palette-trigger:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-primary);
+}
+
+[data-theme="brutalism"] .command-palette-trigger:hover {
+  box-shadow: 3px 3px 0px var(--border-color);
+}
+
+.search-icon {
+  font-size: 16px;
+}
+
+.search-text {
+  flex: 1;
+  text-align: left;
+}
+
+.kbd {
+  background: var(--bg-primary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-secondary);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.sidebar-category {
+  margin-bottom: 8px;
+}
+
+.category-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-header:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.category-icon {
+  font-size: 16px;
+}
+
+.category-name {
+  flex: 1;
+  text-align: left;
+}
+
+.category-chevron {
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+.category-patterns {
+  overflow: hidden;
+}
+
+.pattern-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 32px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.pattern-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.pattern-item.active {
+  background: var(--bg-tertiary);
+  font-weight: 600;
+}
+
+[data-theme="brutalism"] .pattern-item.active {
+  border-left-width: 4px;
+}
+
+.pattern-item .pattern-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pattern-item .pattern-name {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.active-indicator {
+  position: absolute;
+  right: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+[data-theme="brutalism"] .active-indicator {
+  border-radius: 0;
+  width: 8px;
+  height: 8px;
+}
+
+/* Collapsed state */
+.sidebar:has(.sidebar-toggle) {
+  min-width: 60px;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}

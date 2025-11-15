@@ -1,0 +1,139 @@
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import './Sidebar.css'
+import { patterns, PATTERN_CATEGORIES } from '../patterns/patternRegistry'
+
+export default function Sidebar({ selectedPattern, onSelectPattern, onOpenCommandPalette }) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [expandedCategories, setExpandedCategories] = useState({
+    [PATTERN_CATEGORIES.ASYNC]: true,
+    [PATTERN_CATEGORIES.SYNC]: true,
+    [PATTERN_CATEGORIES.HYBRID]: false,
+    [PATTERN_CATEGORIES.RESILIENCE]: false,
+  })
+
+  const categoryNames = {
+    [PATTERN_CATEGORIES.ASYNC]: 'Async',
+    [PATTERN_CATEGORIES.SYNC]: 'Sync',
+    [PATTERN_CATEGORIES.HYBRID]: 'Hybrid',
+    [PATTERN_CATEGORIES.RESILIENCE]: 'Resilience',
+  }
+
+  const categoryIcons = {
+    [PATTERN_CATEGORIES.ASYNC]: '⚡',
+    [PATTERN_CATEGORIES.SYNC]: '↔️',
+    [PATTERN_CATEGORIES.HYBRID]: '🔀',
+    [PATTERN_CATEGORIES.RESILIENCE]: '🛡️',
+  }
+
+  const groupedPatterns = patterns.reduce((acc, pattern) => {
+    if (!acc[pattern.category]) {
+      acc[pattern.category] = []
+    }
+    acc[pattern.category].push(pattern)
+    return acc
+  }, {})
+
+  const toggleCategory = (category) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }))
+  }
+
+  return (
+    <motion.div
+      className="sidebar"
+      animate={{ width: isCollapsed ? '60px' : '280px' }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <div className="sidebar-header">
+        {!isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="sidebar-title"
+          >
+            Patterns
+          </motion.div>
+        )}
+        <button
+          className="sidebar-toggle"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? '»' : '«'}
+        </button>
+      </div>
+
+      <button
+        className="command-palette-trigger"
+        onClick={onOpenCommandPalette}
+        title="Open command palette (Cmd/Ctrl + K)"
+      >
+        <span className="search-icon">🔍</span>
+        {!isCollapsed && <span className="search-text">Search patterns...</span>}
+        {!isCollapsed && <kbd className="kbd">⌘K</kbd>}
+      </button>
+
+      <div className="sidebar-content">
+        {Object.entries(groupedPatterns).map(([category, categoryPatterns]) => (
+          <div key={category} className="sidebar-category">
+            <button
+              className="category-header"
+              onClick={() => toggleCategory(category)}
+              title={isCollapsed ? categoryNames[category] : ''}
+            >
+              <span className="category-icon">{categoryIcons[category]}</span>
+              {!isCollapsed && (
+                <>
+                  <span className="category-name">{categoryNames[category]}</span>
+                  <span className="category-chevron">
+                    {expandedCategories[category] ? '▼' : '▶'}
+                  </span>
+                </>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {(expandedCategories[category] || isCollapsed) && (
+                <motion.div
+                  className="category-patterns"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {categoryPatterns.map((pattern) => (
+                    <button
+                      key={pattern.id}
+                      className={`pattern-item ${selectedPattern === pattern.id ? 'active' : ''}`}
+                      onClick={() => onSelectPattern(pattern.id)}
+                      title={isCollapsed ? pattern.name : pattern.description}
+                      style={{
+                        borderLeftColor: selectedPattern === pattern.id ? pattern.color : 'transparent'
+                      }}
+                    >
+                      <span className="pattern-icon">{pattern.icon}</span>
+                      {!isCollapsed && (
+                        <span className="pattern-name">{pattern.name}</span>
+                      )}
+                      {!isCollapsed && selectedPattern === pattern.id && (
+                        <motion.div
+                          className="active-indicator"
+                          layoutId="active-pattern"
+                          style={{ background: pattern.color }}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}

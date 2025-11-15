@@ -1,8 +1,21 @@
 .app {
   min-height: 100vh;
   display: flex;
+}
+
+.app-main {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  display: flex;
   flex-direction: column;
   padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Adjust for collapsed sidebar */
+.app:has(.sidebar[style*="width: 60px"]) .app-main {
+  margin-left: 60px;
 }
 
 .header {
@@ -332,6 +345,10 @@
 }
 
 @media (max-width: 1024px) {
+  .app-main {
+    margin-left: 0;
+  }
+
   .pattern-layout {
     grid-template-columns: 1fr;
   }
@@ -343,6 +360,10 @@
 }
 
 @media (max-width: 768px) {
+  .app-main {
+    padding: 12px;
+  }
+
   .header h1 {
     font-size: 22px;
   }
