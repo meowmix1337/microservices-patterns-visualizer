@@ -1,5 +1,5 @@
-import { memo, type ButtonHTMLAttributes, type ReactNode } from 'react'
-import { motion } from 'framer-motion'
+import { memo, type ReactNode } from 'react'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 import './Button.css'
 
 export type ButtonVariant =
@@ -13,7 +13,7 @@ export type ButtonVariant =
 
 export type ButtonSize = 'small' | 'medium' | 'large'
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'ref'> {
   /**
    * Visual style variant of the button
    * @default 'primary'
