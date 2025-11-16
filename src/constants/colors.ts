@@ -74,3 +74,52 @@ export const TIMING: Timing = {
   responseDelay: 1000,
   serviceRecoveryDelay: 1500,
 }
+
+// Grid System Configuration
+export interface GridPosition {
+  col: number
+  row: number
+}
+
+export interface GridConfig {
+  columns: number
+  rows: number
+  marginX: number
+  marginY: number
+}
+
+export const GRID_CONFIG: GridConfig = {
+  columns: 12,
+  rows: 8,
+  marginX: 5,
+  marginY: 8
+}
+
+/**
+ * Converts grid coordinates to percentage positions
+ * @param col - Column number (0-indexed, 0 to GRID_CONFIG.columns-1)
+ * @param row - Row number (0-indexed, 0 to GRID_CONFIG.rows-1)
+ * @returns Position with x,y as percentages
+ */
+export function gridToPosition(col: number, row: number): Position {
+  const cellWidth = (100 - 2 * GRID_CONFIG.marginX) / GRID_CONFIG.columns
+  const cellHeight = (100 - 2 * GRID_CONFIG.marginY) / GRID_CONFIG.rows
+
+  return {
+    x: GRID_CONFIG.marginX + (col + 0.5) * cellWidth,
+    y: GRID_CONFIG.marginY + (row + 0.5) * cellHeight
+  }
+}
+
+/**
+ * Pre-defined grid positions for common service placements
+ * These can be used as references for consistent layouts
+ */
+export const GRID_POSITIONS = {
+  // AsyncMicroservices pattern grid positions
+  client: gridToPosition(1, 4),
+  notesService: gridToPosition(3, 4),
+  redis: gridToPosition(6, 2),
+  tagsService: gridToPosition(9, 4),
+  kafka: gridToPosition(6, 6)
+}

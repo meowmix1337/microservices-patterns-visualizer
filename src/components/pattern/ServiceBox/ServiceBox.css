@@ -10,11 +10,44 @@
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 10;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Role-based sizing */
+.service-box[data-type="client"] {
+  min-width: 120px;
+  padding: 14px 18px;
+}
+
+.service-box[data-type="service"] {
+  min-width: 160px;
+  padding: 18px 24px;
+}
+
+.service-box[data-type="cache"],
+.service-box[data-type="queue"] {
+  min-width: 135px;
+  padding: 16px 20px;
 }
 
 .service-icon {
   font-size: 32px;
   margin-bottom: 8px;
+}
+
+/* Scale icons based on service type */
+.service-box[data-type="service"] .service-icon {
+  font-size: 36px;
+}
+
+.service-box[data-type="client"] .service-icon {
+  font-size: 28px;
+}
+
+.service-box[data-type="cache"] .service-icon,
+.service-box[data-type="queue"] .service-icon {
+  font-size: 32px;
 }
 
 .service-name {
@@ -40,4 +73,121 @@
   padding: 2px 8px;
   font-size: 10px;
   font-weight: 600;
+}
+
+/* Tooltip Styles */
+.service-box-tooltip {
+  max-width: 280px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: tooltip-slide-in 0.2s ease-out;
+}
+
+@keyframes tooltip-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-description {
+  font-size: 13px;
+  color: #e2e8f0;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.tooltip-metadata {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.tooltip-metadata-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.tooltip-metadata-item:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-metadata-label {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.tooltip-metadata-value {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.tooltip-arrow {
+  fill: rgba(15, 23, 42, 0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .service-box[data-type="service"] {
+    min-width: 140px;
+    padding: 16px 20px;
+  }
+
+  .service-box[data-type="client"] {
+    min-width: 100px;
+    padding: 12px 16px;
+  }
+
+  .service-box[data-type="cache"],
+  .service-box[data-type="queue"] {
+    min-width: 120px;
+    padding: 14px 18px;
+  }
+
+  .service-box[data-type="service"] .service-icon {
+    font-size: 32px;
+  }
+
+  .service-box[data-type="client"] .service-icon {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-box {
+    min-width: 100px;
+    padding: 12px 16px;
+  }
+
+  .service-box[data-type="service"] {
+    min-width: 120px;
+  }
+
+  .service-box[data-type="client"] {
+    min-width: 90px;
+  }
+
+  .service-icon {
+    font-size: 24px;
+  }
+
+  .service-box[data-type="service"] .service-icon {
+    font-size: 28px;
+  }
+
+  .service-box[data-type="client"] .service-icon {
+    font-size: 20px;
+  }
 }

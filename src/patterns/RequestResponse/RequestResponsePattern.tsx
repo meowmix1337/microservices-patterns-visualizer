@@ -1,12 +1,16 @@
 import { AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
+import DependencyArrow from '../../components/pattern/DependencyArrow'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
 import Button from '../../components/ui/Button'
 import { useStepByStep } from '../../hooks/useStepByStep'
 import { createSpeedDelay } from '../../utils/scenarioHelpers'
 import { useRequestResponseState } from './useRequestResponseState'
+import { REQUEST_RESPONSE_DEPENDENCIES } from './dependencies'
+import { ArchitectureProvider, buildDependencyMap } from '../../contexts/ArchitectureContext'
+import type { Position } from '../../constants/colors'
 import {
   createSimpleRequestScenario,
   createCascadeRequestScenario,
@@ -18,8 +22,19 @@ export interface RequestResponsePatternProps {
   animationSpeed: number
 }
 
+// Position mapping for RequestResponse pattern
+const POSITIONS: Record<string, Position> = {
+  client: { x: 15, y: 30 },
+  notesService: { x: 45, y: 30 },
+  tagsService: { x: 75, y: 50 },
+  userService: { x: 75, y: 10 }
+}
+
 export default function RequestResponsePattern({ animationSpeed }: RequestResponsePatternProps) {
   const state = useRequestResponseState()
+
+  // Build dependency map for hover highlights
+  const dependencyMap = buildDependencyMap(REQUEST_RESPONSE_DEPENDENCIES)
 
   // Step-by-step control hook
   const stepControl = useStepByStep({
@@ -60,7 +75,7 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
   }
 
   return (
-    <>
+    <ArchitectureProvider dependencyMap={dependencyMap}>
       <div className="container">
         <div className="pattern-layout">
           <div className="pattern-sidebar">
@@ -142,37 +157,78 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
             />
 
             <div className="architecture">
+              {/* Render dependency arrows first (behind service boxes) */}
+              {REQUEST_RESPONSE_DEPENDENCIES.map((dep, index) => (
+                <DependencyArrow
+                  key={`${dep.from}-${dep.to}-${index}`}
+                  from={POSITIONS[dep.from]}
+                  to={POSITIONS[dep.to]}
+                  type={dep.type}
+                  label={dep.label}
+                  fromServiceId={dep.from}
+                  toServiceId={dep.to}
+                />
+              ))}
+
               <ServiceBox
                 name="Client"
                 type="client"
-                position={{ x: 20, y: 30 }}
+                position={POSITIONS.client}
                 icon="👤"
-                details="Makes HTTP requests"
+                serviceId="client"
+                tooltip={{
+                  description: "Client application that initiates HTTP requests to services",
+                  metadata: [
+                    { label: "Type", value: "HTTP Client" },
+                    { label: "Protocol", value: "REST" }
+                  ]
+                }}
               />
 
               <ServiceBox
                 name="Notes Service"
                 type="service"
-                position={{ x: 50, y: 30 }}
+                position={POSITIONS.notesService}
                 icon="📝"
-                details="Orchestrates requests"
+                serviceId="notesService"
+                tooltip={{
+                  description: "Orchestrates requests to downstream services (Tags & User Service)",
+                  metadata: [
+                    { label: "Type", value: "REST API" },
+                    { label: "Dependencies", value: "Tags, User Service" }
+                  ]
+                }}
               />
 
               <ServiceBox
                 name="Tags Service"
                 type="service"
-                position={{ x: 80, y: 50 }}
+                position={POSITIONS.tagsService}
                 icon="🏷️"
                 status={state.tagsServiceStatus}
-                details="Manages tags"
+                serviceId="tagsService"
+                tooltip={{
+                  description: "Manages tags and categories for notes",
+                  metadata: [
+                    { label: "Type", value: "REST API" },
+                    { label: "Database", value: "PostgreSQL" }
+                  ]
+                }}
               />
 
               <ServiceBox
                 name="User Service"
                 type="service"
-                position={{ x: 80, y: 10 }}
+                position={POSITIONS.userService}
                 icon="👥"
-                details="User metadata"
+                serviceId="userService"
+                tooltip={{
+                  description: "Provides user metadata and authentication information",
+                  metadata: [
+                    { label: "Type", value: "REST API" },
+                    { label: "Database", value: "PostgreSQL" }
+                  ]
+                }}
               />
 
               <AnimatePresence>
@@ -203,6 +259,6 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
           state.setMessages([])
         }}
       />
-    </>
+    </ArchitectureProvider>
   )
 }

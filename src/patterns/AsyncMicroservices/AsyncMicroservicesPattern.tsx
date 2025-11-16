@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
+import DependencyArrow from '../../components/pattern/DependencyArrow'
 import ControlPanel from '../../components/pattern/ControlPanel'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
@@ -8,6 +9,8 @@ import { useStepByStep } from '../../hooks/useStepByStep'
 import { createSpeedDelay } from '../../utils/scenarioHelpers'
 import { POSITIONS } from '../../constants/colors'
 import { useAsyncMicroservicesState } from './useAsyncMicroservicesState'
+import { ASYNC_MICROSERVICES_DEPENDENCIES } from './dependencies'
+import { ArchitectureProvider, buildDependencyMap } from '../../contexts/ArchitectureContext'
 import {
   createCacheHitScenario,
   createCacheMissScenario,
@@ -21,6 +24,9 @@ export interface AsyncMicroservicesPatternProps {
 
 export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicroservicesPatternProps) {
   const state = useAsyncMicroservicesState()
+
+  // Build dependency map for hover highlights
+  const dependencyMap = buildDependencyMap(ASYNC_MICROSERVICES_DEPENDENCIES)
 
   // Use the step-by-step hook
   const stepControl = useStepByStep({
@@ -61,7 +67,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
   }
 
   return (
-    <>
+    <ArchitectureProvider dependencyMap={dependencyMap}>
       <div className="container">
         <div className="pattern-layout">
           <div className="pattern-sidebar">
@@ -90,11 +96,32 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
             />
 
             <div className="architecture">
+              {/* Render dependency arrows first (behind service boxes) */}
+              {ASYNC_MICROSERVICES_DEPENDENCIES.map((dep, index) => (
+                <DependencyArrow
+                  key={`${dep.from}-${dep.to}-${index}`}
+                  from={POSITIONS[dep.from as keyof typeof POSITIONS]}
+                  to={POSITIONS[dep.to as keyof typeof POSITIONS]}
+                  type={dep.type}
+                  label={dep.label}
+                  fromServiceId={dep.from}
+                  toServiceId={dep.to}
+                />
+              ))}
+
               <ServiceBox
                 name="Client"
                 type="client"
                 position={POSITIONS.client}
                 icon="👤"
+                serviceId="client"
+                tooltip={{
+                  description: "Client application that initiates requests to the Notes Service",
+                  metadata: [
+                    { label: "Type", value: "HTTP Client" },
+                    { label: "Protocol", value: "REST" }
+                  ]
+                }}
               />
 
               <ServiceBox
@@ -102,7 +129,15 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                 type="service"
                 position={POSITIONS.notesService}
                 icon="📝"
-                details="Main API service with cache-aside pattern"
+                serviceId="notesService"
+                tooltip={{
+                  description: "Main API service implementing cache-aside pattern for performance",
+                  metadata: [
+                    { label: "Type", value: "REST API" },
+                    { label: "Cache Strategy", value: "Cache-Aside" },
+                    { label: "Dependencies", value: "Redis, Tags Service, Kafka" }
+                  ]
+                }}
               />
 
               <ServiceBox
@@ -111,7 +146,15 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                 position={POSITIONS.redis}
                 icon="⚡"
                 status={state.redisStatus}
-                details="Sub-millisecond lookups"
+                serviceId="redis"
+                tooltip={{
+                  description: "In-memory cache for ultra-fast data lookups (sub-millisecond)",
+                  metadata: [
+                    { label: "Type", value: "Key-Value Store" },
+                    { label: "Latency", value: "<1ms" },
+                    { label: "Status", value: state.redisStatus === 'healthy' ? 'Healthy' : 'Down' }
+                  ]
+                }}
               />
 
               <ServiceBox
@@ -120,7 +163,15 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                 position={POSITIONS.tagsService}
                 icon="🏷️"
                 status={state.tagsServiceStatus}
-                details="Manages tags and publishes events"
+                serviceId="tagsService"
+                tooltip={{
+                  description: "Manages tags and publishes events to Kafka for async processing",
+                  metadata: [
+                    { label: "Type", value: "REST API" },
+                    { label: "Event Bus", value: "Kafka" },
+                    { label: "Status", value: state.tagsServiceStatus === 'healthy' ? 'Healthy' : 'Down' }
+                  ]
+                }}
               />
 
               <ServiceBox
@@ -128,7 +179,15 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                 type="queue"
                 position={POSITIONS.kafka}
                 icon="📨"
-                details={`Consumer lag: ${state.kafkaLag}s`}
+                serviceId="kafka"
+                tooltip={{
+                  description: "Distributed message queue for asynchronous event-driven communication",
+                  metadata: [
+                    { label: "Type", value: "Message Queue" },
+                    { label: "Consumer Lag", value: `${state.kafkaLag}s` },
+                    { label: "Pattern", value: "Pub/Sub" }
+                  ]
+                }}
               />
 
               <AnimatePresence>
@@ -169,6 +228,6 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
           state.setMessages([])
         }}
       />
-    </>
+    </ArchitectureProvider>
   )
 }
