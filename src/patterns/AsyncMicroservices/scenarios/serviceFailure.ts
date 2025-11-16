@@ -1,12 +1,14 @@
 import type { Step } from '../../../hooks/useStepByStep.d'
 import type { UseAsyncMicroservicesStateReturn } from '../useAsyncMicroservicesState'
-import { POSITIONS } from '../../../constants/colors'
+import type { Position } from '../../../constants/colors'
 import type { MessageFlowData } from '../../../components/pattern/MessageFlow'
 
 export function createServiceFailureScenario(
   state: UseAsyncMicroservicesStateReturn,
-  speedDelay: (ms: number) => Promise<void>
+  speedDelay: (ms: number) => Promise<void>,
+  positions: Record<string, Position>
 ): Step[] {
+  const POSITIONS = positions
   return [
     {
       explanation: "Tags Service goes DOWN! This simulates a real service outage scenario",

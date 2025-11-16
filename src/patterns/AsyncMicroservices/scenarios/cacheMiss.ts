@@ -1,12 +1,14 @@
 import type { Step } from '../../../hooks/useStepByStep.d'
 import type { UseAsyncMicroservicesStateReturn } from '../useAsyncMicroservicesState'
-import { POSITIONS } from '../../../constants/colors'
+import type { Position } from '../../../constants/colors'
 import type { MessageFlowData } from '../../../components/pattern/MessageFlow'
 
 export function createCacheMissScenario(
   state: UseAsyncMicroservicesStateReturn,
-  speedDelay: (ms: number) => Promise<void>
+  speedDelay: (ms: number) => Promise<void>,
+  positions: Record<string, Position>
 ): Step[] {
+  const POSITIONS = positions
   return [
     {
       explanation: "Client sends GET request to Notes Service for note data",

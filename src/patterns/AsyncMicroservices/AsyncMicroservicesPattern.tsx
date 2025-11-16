@@ -7,7 +7,7 @@ import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
 import { useStepByStep } from '../../hooks/useStepByStep'
 import { createSpeedDelay } from '../../utils/scenarioHelpers'
-import { POSITIONS } from '../../constants/colors'
+import { type Position, gridToPosition } from '../../constants/colors'
 import { useAsyncMicroservicesState } from './useAsyncMicroservicesState'
 import { ASYNC_MICROSERVICES_DEPENDENCIES } from './dependencies'
 import { ArchitectureProvider, buildDependencyMap } from '../../contexts/ArchitectureContext'
@@ -20,6 +20,17 @@ import {
 
 export interface AsyncMicroservicesPatternProps {
   animationSpeed: number
+}
+
+// Position mapping for AsyncMicroservices pattern using grid system for better spacing
+// Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
+// Vertical optimization: services positioned in rows 0-6 to utilize full vertical space
+const POSITIONS: Record<string, Position> = {
+  client: gridToPosition(0, 2),      // Far left, row 1 vertically (~18.75% from top)
+  notesService: gridToPosition(3, 2), // Left-center, row 3 vertically (~41.25% from top)
+  redis: gridToPosition(6, 0),        // Center, row 0 (near top) (~6.25% from top)
+  tagsService: gridToPosition(9, 2),  // Far right, row 3 vertically (~41.25% from top)
+  kafka: gridToPosition(6, 4),        // Center, row 5 vertically (~63.75% from top)
 }
 
 export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicroservicesPatternProps) {
@@ -46,23 +57,23 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
 
   // Cache Hit scenario - step-by-step
   const simulateCacheHit = (): void => {
-    const cacheHitSteps = createCacheHitScenario(state, speedDelay)
+    const cacheHitSteps = createCacheHitScenario(state, speedDelay, POSITIONS)
     stepControl.loadScenario('Cache Hit (Step-by-Step Demo)', cacheHitSteps)
   }
 
   // Cache Miss scenario - step-by-step
   const simulateCacheMiss = (): void => {
-    const cacheMissSteps = createCacheMissScenario(state, speedDelay)
+    const cacheMissSteps = createCacheMissScenario(state, speedDelay, POSITIONS)
     stepControl.loadScenario('Cache Miss (Slower Path)', cacheMissSteps)
   }
 
   const simulateAsyncUpdate = (): void => {
-    const asyncUpdateSteps = createAsyncUpdateScenario(state, speedDelay)
+    const asyncUpdateSteps = createAsyncUpdateScenario(state, speedDelay, POSITIONS)
     stepControl.loadScenario('Async Event-Driven Update', asyncUpdateSteps)
   }
 
   const simulateServiceFailure = (): void => {
-    const serviceFailureSteps = createServiceFailureScenario(state, speedDelay)
+    const serviceFailureSteps = createServiceFailureScenario(state, speedDelay, POSITIONS)
     stepControl.loadScenario('Service Failure & Circuit Breaker', serviceFailureSteps)
   }
 

@@ -23,14 +23,6 @@ export interface Colors {
   default: string
 }
 
-export interface Positions {
-  client: Position
-  notesService: Position
-  redis: Position
-  tagsService: Position
-  kafka: Position
-}
-
 export interface Timing {
   messageDelay: number
   cacheCheckDelay: number
@@ -105,21 +97,10 @@ export function gridToPosition(col: number, row: number): Position {
   }
 }
 
-// Use grid-based positions for better spacing and visual clarity
-// Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
-// Vertical optimization: services positioned in rows 0-6 to utilize full vertical space
-export const POSITIONS: Positions = {
-  client: gridToPosition(0, 2),      // Far left, row 1 vertically (~18.75% from top)
-  notesService: gridToPosition(3, 2), // Left-center, row 3 vertically (~41.25% from top)
-  redis: gridToPosition(6, 0),        // Center, row 0 (near top) (~6.25% from top)
-  tagsService: gridToPosition(9, 2),  // Far right, row 3 vertically (~41.25% from top)
-  kafka: gridToPosition(6, 4),        // Center, row 5 vertically (~63.75% from top)
-}
-
 /**
  * Pre-defined grid positions for common service placements
- * Legacy reference - POSITIONS now uses gridToPosition directly
- * @deprecated Use gridToPosition() directly for better flexibility
+ * Individual patterns now define their own POSITIONS constants using gridToPosition()
+ * @deprecated Use gridToPosition() directly in pattern files for better flexibility
  */
 export const GRID_POSITIONS = {
   // Legacy AsyncMicroservices pattern grid positions

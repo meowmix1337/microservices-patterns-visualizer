@@ -26,10 +26,10 @@ export interface RequestResponsePatternProps {
 // Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
 // Vertical optimization: services positioned in rows 0-5 to utilize full vertical space
 const POSITIONS: Record<string, Position> = {
-  client: gridToPosition(1, 2),      // Far left, row 1 vertically (~18.75% from top)
-  notesService: gridToPosition(5, 2), // Center-left, row 2 vertically (~28.75% from top)
-  tagsService: gridToPosition(9, 4), // Far right, row 4 vertically (~48.75% from top)
-  userService: gridToPosition(9, 0)  // Far right, row 0 (near top) (~6.25% from top)
+  client: gridToPosition(0, 2),      // Far left, row 1 vertically (~18.75% from top)
+  notesService: gridToPosition(3, 2), // Center-left, row 2 vertically (~28.75% from top)
+  tagsService: gridToPosition(7, 4), // Far right, row 4 vertically (~48.75% from top)
+  userService: gridToPosition(7, 0)  // Far right, row 0 (near top) (~6.25% from top)
 }
 
 export default function RequestResponsePattern({ animationSpeed }: RequestResponsePatternProps) {
