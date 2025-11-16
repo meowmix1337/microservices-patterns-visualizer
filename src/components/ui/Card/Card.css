@@ -1,0 +1,140 @@
+/**
+ * Card Component Styles
+ * Provides consistent card/panel styling across the application
+ */
+
+.ui-card {
+  /* Base styles */
+  background: var(--bg-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+
+  /* Transitions */
+  transition: all 0.3s ease;
+}
+
+/* Padding variants */
+.ui-card--padding-none {
+  padding: 0;
+}
+
+.ui-card--padding-small {
+  padding: 12px;
+}
+
+.ui-card--padding-medium {
+  padding: 16px;
+}
+
+.ui-card--padding-large {
+  padding: 24px;
+}
+
+/* Variant: Default */
+.ui-card--default {
+  background: var(--bg-secondary);
+}
+
+[data-theme="brutalism"] .ui-card--default {
+  box-shadow: var(--shadow);
+}
+
+/* Variant: Glass (with glassmorphism effect) */
+.ui-card--glass {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .ui-card--glass {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="brutalism"] .ui-card--glass {
+  box-shadow: var(--shadow);
+}
+
+/* Variant: Elevated (with shadow) */
+.ui-card--elevated {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .ui-card--elevated {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="brutalism"] .ui-card--elevated {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Hoverable state */
+.ui-card--hoverable {
+  cursor: pointer;
+}
+
+[data-theme="dark"] .ui-card--hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="brutalism"] .ui-card--hoverable:hover {
+  transform: translate(-2px, -2px);
+}
+
+.ui-card--hoverable:active {
+  transform: translateY(0);
+}
+
+[data-theme="brutalism"] .ui-card--hoverable:active {
+  transform: translate(0, 0);
+}
+
+/* Clickable cursor */
+.ui-card--clickable {
+  cursor: pointer;
+}
+
+/* Selected state */
+.ui-card--selected {
+  border-color: var(--accent-primary);
+}
+
+[data-theme="dark"] .ui-card--selected {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+[data-theme="brutalism"] .ui-card--selected {
+  border-color: var(--accent-primary);
+  box-shadow: 6px 6px 0px var(--accent-primary);
+}
+
+/* Heading styles inside cards */
+.ui-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ui-card h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  margin-top: 16px;
+}
+
+.ui-card h4:first-of-type {
+  margin-top: 0;
+}
+
+/* Focus visible for accessibility */
+.ui-card--clickable:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}

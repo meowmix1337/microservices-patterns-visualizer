@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { useStepByStep } from '../hooks/useStepByStep'
 import { createStep, createScenario, createStepBuilder, createSpeedDelay } from '../utils/scenarioHelpers'
-import StepByStepControls from '../components/StepByStepControls'
+import StepByStepControls from '../components/pattern/StepByStepControls'
 
 export default function StepByStepDemo() {
   const [animationSpeed, setAnimationSpeed] = useState(1)
