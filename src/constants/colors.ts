@@ -86,7 +86,7 @@ export const GRID_CONFIG: GridConfig = {
   columns: 12,
   rows: 8,
   marginX: 5,
-  marginY: 10
+  marginY: 5
 }
 
 /**
@@ -107,12 +107,13 @@ export function gridToPosition(col: number, row: number): Position {
 
 // Use grid-based positions for better spacing and visual clarity
 // Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
+// Vertical optimization: services positioned in rows 0-6 to utilize full vertical space
 export const POSITIONS: Positions = {
-  client: gridToPosition(0, 4),      // Far left, middle vertically (~8.75% from left)
-  notesService: gridToPosition(3, 4), // Left-center, middle vertically (~31.25%)
-  redis: gridToPosition(6, 2),        // Center, upper area (~53.75%)
-  tagsService: gridToPosition(9, 4),  // Far right, middle vertically (~76.25%)
-  kafka: gridToPosition(6, 6),        // Center, lower area (~53.75%)
+  client: gridToPosition(0, 2),      // Far left, row 1 vertically (~18.75% from top)
+  notesService: gridToPosition(3, 2), // Left-center, row 3 vertically (~41.25% from top)
+  redis: gridToPosition(6, 0),        // Center, row 0 (near top) (~6.25% from top)
+  tagsService: gridToPosition(9, 2),  // Far right, row 3 vertically (~41.25% from top)
+  kafka: gridToPosition(6, 4),        // Center, row 5 vertically (~63.75% from top)
 }
 
 /**

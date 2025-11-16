@@ -24,11 +24,12 @@ export interface RequestResponsePatternProps {
 
 // Position mapping for RequestResponse pattern using grid system for better spacing
 // Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
+// Vertical optimization: services positioned in rows 0-5 to utilize full vertical space
 const POSITIONS: Record<string, Position> = {
-  client: gridToPosition(1, 3),      // Far left, slightly above middle (~16.25% from left)
-  notesService: gridToPosition(5, 3), // Center-left, same vertical level as client (~46.25%)
-  tagsService: gridToPosition(9, 5), // Far right, lower position (~76.25%)
-  userService: gridToPosition(9, 1)  // Far right, upper position (~76.25%)
+  client: gridToPosition(1, 2),      // Far left, row 1 vertically (~18.75% from top)
+  notesService: gridToPosition(5, 2), // Center-left, row 2 vertically (~28.75% from top)
+  tagsService: gridToPosition(9, 4), // Far right, row 4 vertically (~48.75% from top)
+  userService: gridToPosition(9, 0)  // Far right, row 0 (near top) (~6.25% from top)
 }
 
 export default function RequestResponsePattern({ animationSpeed }: RequestResponsePatternProps) {
