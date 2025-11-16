@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { useLogs } from '../../hooks/useLogs'
+import { useLogs, type LogEntry, type LogType } from '../../hooks/useLogs'
 import type { MessageFlowData } from '../../components/pattern/MessageFlow'
 import type { ServiceStatus } from '../../components/pattern/ServiceBox'
 
 export interface UseRequestResponseStateReturn {
   // State
   messages: MessageFlowData[]
-  logs: Array<{ message: string; type: string; timestamp: string }>
+  logs: LogEntry[]
   runCounter: number
   tagsServiceStatus: ServiceStatus
 
@@ -16,7 +16,7 @@ export interface UseRequestResponseStateReturn {
   setTagsServiceStatus: React.Dispatch<React.SetStateAction<ServiceStatus>>
 
   // Log methods
-  addLog: (message: string, type: string) => void
+  addLog: (message: string, type?: LogType) => void
   clearLogs: () => void
 }
 

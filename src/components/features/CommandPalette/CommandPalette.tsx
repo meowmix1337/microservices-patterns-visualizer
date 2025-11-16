@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, type KeyboardEvent, type ChangeEvent, type MouseEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Button } from '../../ui'
 import './CommandPalette.css'
 import { patterns, type Pattern } from '../../../patterns/patternRegistry'
 
@@ -101,9 +102,14 @@ export default function CommandPalette({ isOpen, onClose, onSelectPattern, selec
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
             />
-            <button className="close-btn" onClick={onClose} title="Close (Esc)">
-              ✕
-            </button>
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={onClose}
+              title="Close (Esc)"
+              iconLeft="✕"
+              className="close-btn"
+            />
           </div>
 
           <div className="command-palette-results">

@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { Card } from '../../ui'
 import './CacheViewer.css'
 
 export type CacheValue = string[] | string | number | boolean | object
@@ -13,7 +14,7 @@ export interface CacheViewerProps {
 
 function CacheViewer({ data }: CacheViewerProps) {
   return (
-    <div className="cache-viewer panel">
+    <Card variant="glass" padding="medium" className="cache-viewer">
       <h3>⚡ Redis Cache</h3>
       <div className="cache-content">
         {Object.keys(data).length === 0 ? (
@@ -40,7 +41,7 @@ function CacheViewer({ data }: CacheViewerProps) {
           </>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

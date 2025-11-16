@@ -1,20 +1,8 @@
-.panel {
-  background: var(--bg-secondary);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 16px;
-  transition: all 0.3s ease;
+.cache-viewer {
+  flex: 1;
 }
 
-[data-theme="dark"] .panel {
-  backdrop-filter: blur(10px);
-}
-
-[data-theme="brutalism"] .panel {
-  box-shadow: var(--shadow);
-}
-
-.panel h3 {
+.cache-viewer h3 {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -22,10 +10,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.cache-viewer {
-  flex: 1;
 }
 
 .cache-content {

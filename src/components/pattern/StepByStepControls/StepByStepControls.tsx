@@ -1,3 +1,4 @@
+import { Button, Card } from '../../ui'
 import './StepByStepControls.css'
 
 export interface StepByStepControlsProps {
@@ -24,7 +25,7 @@ export default function StepByStepControls({
   if (!isRunning) return null
 
   return (
-    <div className="step-controls panel">
+    <Card variant="glass" padding="medium" className="step-controls">
       <div className="step-info">
         <div className="step-counter">
           Step {currentStep} of {totalSteps}
@@ -37,32 +38,38 @@ export default function StepByStepControls({
       </div>
 
       <div className="control-buttons">
-        <button
-          className="control-btn"
+        <Button
+          variant="secondary"
+          size="medium"
           onClick={onPrevious}
           disabled={currentStep === 1}
           title="Previous step (←)"
+          iconLeft="←"
         >
-          ← Prev
-        </button>
+          Prev
+        </Button>
 
-        <button
-          className={`control-btn play-btn ${isAutoPlaying ? 'playing' : ''}`}
+        <Button
+          variant={isAutoPlaying ? 'warning' : 'success'}
+          size="medium"
           onClick={onToggleAutoPlay}
           title={isAutoPlaying ? 'Pause auto-play (Space)' : 'Start auto-play (Space)'}
+          iconLeft={isAutoPlaying ? '⏸' : '▶'}
         >
-          {isAutoPlaying ? '⏸ Pause' : '▶ Play'}
-        </button>
+          {isAutoPlaying ? 'Pause' : 'Play'}
+        </Button>
 
-        <button
-          className="control-btn"
+        <Button
+          variant="primary"
+          size="medium"
           onClick={onNext}
           disabled={currentStep === totalSteps}
           title="Next step (→)"
+          iconRight="→"
         >
-          Next →
-        </button>
+          Next
+        </Button>
       </div>
-    </div>
+    </Card>
   )
 }

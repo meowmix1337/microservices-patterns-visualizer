@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Button, Card } from '../../ui'
 import CacheViewer, { type CacheData } from '../CacheViewer'
 import QueueViewer, { type QueueMessage } from '../QueueViewer'
 import Logs from '../Logs'
@@ -23,11 +24,12 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: In
   // Toggle button when panel is hidden
   if (!isVisible) {
     return (
-      <motion.button
-        className="activity-monitor-toggle"
+      <Button
+        variant="secondary"
+        size="medium"
         onClick={() => setIsVisible(true)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        iconLeft="📊"
+        className="activity-monitor-toggle"
         style={{
           position: 'fixed',
           bottom: 20,
@@ -36,15 +38,14 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: In
         }}
         title="Open Activity Monitor"
       >
-        <span className="toggle-icon">📊</span>
-        <span className="toggle-text">Activity Monitor</span>
-      </motion.button>
+        Activity Monitor
+      </Button>
     )
   }
 
   return (
     <motion.div
-      className="info-tabs-floating panel"
+      className="info-tabs-floating"
       drag
       dragMomentum={false}
       dragElastic={0.1}
@@ -59,68 +60,82 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: In
         cursor: 'move'
       }}
     >
-      <div className="floating-header">
-        <div className="drag-handle">
-          <span className="drag-icon">⋮⋮</span>
-          <span className="floating-title">Activity Monitor</span>
-        </div>
-        <div className="header-actions">
-          {onClear && (
-            <button
-              className="clear-btn"
-              onClick={onClear}
-              title="Clear all data"
-            >
-              🗑️
-            </button>
-          )}
-          <button
-            className="minimize-btn"
-            onClick={() => setIsMinimized(!isMinimized)}
-            title={isMinimized ? 'Maximize' : 'Minimize'}
-          >
-            {isMinimized ? '□' : '−'}
-          </button>
-          <button
-            className="close-btn"
-            onClick={() => setIsVisible(false)}
-            title="Close Activity Monitor"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-
-      {!isMinimized && (
-        <>
-          <div className="tabs-header">
-            <button
-              className={`tab-btn ${activeTab === 'logs' ? 'active' : ''}`}
-              onClick={() => setActiveTab('logs')}
-            >
-              📋 Logs
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'cache' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cache')}
-            >
-              ⚡ Cache
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'queue' ? 'active' : ''}`}
-              onClick={() => setActiveTab('queue')}
-            >
-              📨 Queue
-            </button>
+      <Card variant="glass" padding="none" className="info-tabs-card">
+        <div className="floating-header">
+          <div className="drag-handle">
+            <span className="drag-icon">⋮⋮</span>
+            <span className="floating-title">Activity Monitor</span>
           </div>
-
-          <div className="tab-content">
-            {activeTab === 'logs' && <Logs logs={logs} />}
-            {activeTab === 'cache' && <CacheViewer data={cacheData} />}
-            {activeTab === 'queue' && <QueueViewer messages={queueMessages} />}
+          <div className="header-actions">
+            {onClear && (
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={onClear}
+                title="Clear all data"
+                iconLeft="🗑️"
+                className="action-btn clear-btn"
+              />
+            )}
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={() => setIsMinimized(!isMinimized)}
+              title={isMinimized ? 'Maximize' : 'Minimize'}
+              iconLeft={isMinimized ? '□' : '−'}
+              className="action-btn minimize-btn"
+            />
+            <Button
+              variant="ghost"
+              size="small"
+              onClick={() => setIsVisible(false)}
+              title="Close Activity Monitor"
+              iconLeft="✕"
+              className="action-btn close-btn"
+            />
           </div>
-        </>
-      )}
+        </div>
+
+        {!isMinimized && (
+          <>
+            <div className="tabs-header">
+              <Button
+                variant={activeTab === 'logs' ? 'primary' : 'ghost'}
+                size="small"
+                onClick={() => setActiveTab('logs')}
+                iconLeft="📋"
+                className="tab-btn"
+              >
+                Logs
+              </Button>
+              <Button
+                variant={activeTab === 'cache' ? 'primary' : 'ghost'}
+                size="small"
+                onClick={() => setActiveTab('cache')}
+                iconLeft="⚡"
+                className="tab-btn"
+              >
+                Cache
+              </Button>
+              <Button
+                variant={activeTab === 'queue' ? 'primary' : 'ghost'}
+                size="small"
+                onClick={() => setActiveTab('queue')}
+                iconLeft="📨"
+                className="tab-btn"
+              >
+                Queue
+              </Button>
+            </div>
+
+            <div className="tab-content">
+              {activeTab === 'logs' && <Logs logs={logs} />}
+              {activeTab === 'cache' && <CacheViewer data={cacheData} />}
+              {activeTab === 'queue' && <QueueViewer messages={queueMessages} />}
+            </div>
+          </>
+        )}
+      </Card>
     </motion.div>
   )
 }

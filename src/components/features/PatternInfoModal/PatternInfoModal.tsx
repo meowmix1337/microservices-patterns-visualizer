@@ -1,4 +1,5 @@
 import { motion, AnimatePresence, type MouseEvent } from 'framer-motion'
+import { Button, Card } from '../../ui'
 import type { Pattern } from '../../../patterns/patternRegistry'
 import './PatternInfoModal.css'
 
@@ -27,12 +28,11 @@ export default function PatternInfoModal({ pattern, isOpen, onClose }: PatternIn
           exit={{ opacity: 0 }}
           onClick={handleBackdropClick}
         >
-          <motion.div
-            className="modal-content panel"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', duration: 0.3 }}
+          <Card
+            variant="glass"
+            padding="none"
+            animated
+            className="modal-content"
           >
             <div className="modal-header">
               <div className="modal-title-row">
@@ -40,13 +40,14 @@ export default function PatternInfoModal({ pattern, isOpen, onClose }: PatternIn
                   {pattern.icon}
                 </span>
                 <h2 className="modal-title">{pattern.name}</h2>
-                <button
-                  className="modal-close-btn"
+                <Button
+                  variant="ghost"
+                  size="small"
                   onClick={onClose}
                   title="Close"
-                >
-                  ✕
-                </button>
+                  iconLeft="✕"
+                  className="modal-close-btn"
+                />
               </div>
               <p className="modal-description">{pattern.description}</p>
               <div className="modal-meta">
@@ -104,7 +105,7 @@ export default function PatternInfoModal({ pattern, isOpen, onClose }: PatternIn
                 </section>
               )}
             </div>
-          </motion.div>
+          </Card>
         </motion.div>
       )}
     </AnimatePresence>

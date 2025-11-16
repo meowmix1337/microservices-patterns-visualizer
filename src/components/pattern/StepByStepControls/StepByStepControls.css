@@ -1,22 +1,8 @@
 .step-controls {
-  background: var(--bg-secondary);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 16px;
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: all 0.3s ease;
-}
-
-[data-theme="dark"] .step-controls {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
-  backdrop-filter: blur(10px);
-}
-
-[data-theme="brutalism"] .step-controls {
-  box-shadow: 4px 4px 0px var(--border-color);
 }
 
 .step-info {
@@ -59,59 +45,8 @@
   justify-content: center;
 }
 
-.control-btn {
-  flex: 1;
-  background: var(--bg-tertiary);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  padding: 10px 16px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.control-btn:hover:not(:disabled) {
-  background: var(--accent-primary);
-  color: var(--bg-primary);
-  transform: translateY(-1px);
-}
-
-.control-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-[data-theme="brutalism"] .control-btn:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0px var(--border-color);
-}
-
-.play-btn.playing {
-  background: var(--accent-secondary);
-  color: var(--bg-primary);
-}
-
-[data-theme="dark"] .play-btn {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #fff;
-}
-
-[data-theme="dark"] .play-btn.playing {
-  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
-}
-
 @media (max-width: 768px) {
-  .step-controls {
-    padding: 12px;
-  }
-
   .control-buttons {
     flex-direction: column;
-  }
-
-  .control-btn {
-    width: 100%;
   }
 }

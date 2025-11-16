@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { Card } from '../../ui'
 import './QueueViewer.css'
 
 export interface QueueMessage {
@@ -15,7 +16,7 @@ export interface QueueViewerProps {
 
 function QueueViewer({ messages }: QueueViewerProps) {
   return (
-    <div className="queue-viewer panel">
+    <Card variant="glass" padding="medium" className="queue-viewer">
       <h3>📨 Kafka Queue</h3>
       <div className="queue-content">
         {messages.length === 0 ? (
@@ -46,7 +47,7 @@ function QueueViewer({ messages }: QueueViewerProps) {
           </>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

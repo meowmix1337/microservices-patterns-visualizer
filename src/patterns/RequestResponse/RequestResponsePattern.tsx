@@ -3,6 +3,7 @@ import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
+import Button from '../../components/ui/Button'
 import { useStepByStep } from '../../hooks/useStepByStep'
 import { createSpeedDelay } from '../../utils/scenarioHelpers'
 import { useRequestResponseState } from './useRequestResponseState'
@@ -68,25 +69,61 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
               <div className="scenarios">
                 <h4>Scenarios</h4>
                 <div className="button-grid">
-                  <button onClick={simulateSimpleRequest} className="scenario-btn success">
-                    ✅ Simple Request
-                    <span className="scenario-desc">Basic request-response</span>
-                  </button>
+                  <div className="scenario-btn-wrapper">
+                    <Button
+                      onClick={simulateSimpleRequest}
+                      variant="success"
+                      className="scenario-btn"
+                      aria-label="Simulate simple request-response scenario"
+                    >
+                      <span className="scenario-btn-content">
+                        <span className="scenario-btn-label">✅ Simple Request</span>
+                        <span className="scenario-desc">Basic request-response</span>
+                      </span>
+                    </Button>
+                  </div>
 
-                  <button onClick={simulateCascadeRequest} className="scenario-btn info">
-                    🔗 Cascade Request
-                    <span className="scenario-desc">Sequential service calls</span>
-                  </button>
+                  <div className="scenario-btn-wrapper">
+                    <Button
+                      onClick={simulateCascadeRequest}
+                      variant="info"
+                      className="scenario-btn"
+                      aria-label="Simulate cascade request with sequential service calls"
+                    >
+                      <span className="scenario-btn-content">
+                        <span className="scenario-btn-label">🔗 Cascade Request</span>
+                        <span className="scenario-desc">Sequential service calls</span>
+                      </span>
+                    </Button>
+                  </div>
 
-                  <button onClick={simulateParallelRequests} className="scenario-btn warning">
-                    ⚡ Parallel Requests
-                    <span className="scenario-desc">Concurrent calls (faster)</span>
-                  </button>
+                  <div className="scenario-btn-wrapper">
+                    <Button
+                      onClick={simulateParallelRequests}
+                      variant="warning"
+                      className="scenario-btn"
+                      aria-label="Simulate parallel concurrent requests"
+                    >
+                      <span className="scenario-btn-content">
+                        <span className="scenario-btn-label">⚡ Parallel Requests</span>
+                        <span className="scenario-desc">Concurrent calls (faster)</span>
+                      </span>
+                    </Button>
+                  </div>
 
-                  <button onClick={simulateTimeout} className="scenario-btn error">
-                    ⏱️ Timeout Handling
-                    <span className="scenario-desc">Fallback on failure</span>
-                  </button>
+                  <div className="scenario-btn-wrapper">
+                    <Button
+                      onClick={simulateTimeout}
+                      variant="error"
+                      className="scenario-btn"
+                      aria-label="Simulate timeout handling with fallback strategy"
+                    >
+                      <span className="scenario-btn-content">
+                        <span className="scenario-btn-label">⏱️ Timeout Handling</span>
+                        <span className="scenario-desc">Fallback on failure</span>
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
