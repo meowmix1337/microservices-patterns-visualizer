@@ -58,14 +58,6 @@ export const COLORS: Colors = {
   default: '#6b7280',
 }
 
-export const POSITIONS: Positions = {
-  client: { x: 10, y: 50 },
-  notesService: { x: 25, y: 50 },
-  redis: { x: 50, y: 35 },
-  tagsService: { x: 75, y: 50 },
-  kafka: { x: 50, y: 65 },
-}
-
 export const TIMING: Timing = {
   messageDelay: 500,
   cacheCheckDelay: 500,
@@ -88,11 +80,13 @@ export interface GridConfig {
   marginY: number
 }
 
+// IMPORTANT: GRID_CONFIG must be defined before gridToPosition function
+// which must be before GRID_POSITIONS to avoid initialization order errors
 export const GRID_CONFIG: GridConfig = {
   columns: 12,
   rows: 8,
   marginX: 5,
-  marginY: 8
+  marginY: 10
 }
 
 /**
@@ -111,12 +105,23 @@ export function gridToPosition(col: number, row: number): Position {
   }
 }
 
+// Use grid-based positions for better spacing and visual clarity
+// Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
+export const POSITIONS: Positions = {
+  client: gridToPosition(0, 4),      // Far left, middle vertically (~8.75% from left)
+  notesService: gridToPosition(3, 4), // Left-center, middle vertically (~31.25%)
+  redis: gridToPosition(6, 2),        // Center, upper area (~53.75%)
+  tagsService: gridToPosition(9, 4),  // Far right, middle vertically (~76.25%)
+  kafka: gridToPosition(6, 6),        // Center, lower area (~53.75%)
+}
+
 /**
  * Pre-defined grid positions for common service placements
- * These can be used as references for consistent layouts
+ * Legacy reference - POSITIONS now uses gridToPosition directly
+ * @deprecated Use gridToPosition() directly for better flexibility
  */
 export const GRID_POSITIONS = {
-  // AsyncMicroservices pattern grid positions
+  // Legacy AsyncMicroservices pattern grid positions
   client: gridToPosition(1, 4),
   notesService: gridToPosition(3, 4),
   redis: gridToPosition(6, 2),

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
-import DependencyArrow from '../../components/pattern/DependencyArrow'
+// import DependencyArrow from '../../components/pattern/DependencyArrow' // Removed - arrows hidden
 import ControlPanel from '../../components/pattern/ControlPanel'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
@@ -96,7 +96,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
             />
 
             <div className="architecture">
-              {/* Render dependency arrows first (behind service boxes) */}
+              {/* Dependency arrows removed for cleaner view - focus on service positioning */}
+              {/*
               {ASYNC_MICROSERVICES_DEPENDENCIES.map((dep, index) => (
                 <DependencyArrow
                   key={`${dep.from}-${dep.to}-${index}`}
@@ -106,8 +107,11 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                   label={dep.label}
                   fromServiceId={dep.from}
                   toServiceId={dep.to}
+                  fromServiceType={dep.fromServiceType}
+                  toServiceType={dep.toServiceType}
                 />
               ))}
+              */}
 
               <ServiceBox
                 name="Client"

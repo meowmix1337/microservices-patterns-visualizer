@@ -5,13 +5,14 @@ import type { ServiceStatus } from '../../components/pattern/ServiceBox'
 import type { RedisStatus } from '../../components/pattern/ControlPanel'
 import type { CacheData } from '../../components/viewers/CacheViewer'
 import type { QueueMessage } from '../../components/viewers/QueueViewer'
+import type { LogEntry, LogType } from '../../hooks/useLogs'
 
 export interface UseAsyncMicroservicesStateReturn {
   // State
   messages: MessageFlowData[]
   cacheData: CacheData
   queueMessages: QueueMessage[]
-  logs: Array<{ message: string; type: string; timestamp: string }>
+  logs: LogEntry[]
   kafkaLag: number
   redisStatus: RedisStatus
   tagsServiceStatus: ServiceStatus
@@ -27,7 +28,7 @@ export interface UseAsyncMicroservicesStateReturn {
   setRunCounter: React.Dispatch<React.SetStateAction<number>>
 
   // Log methods
-  addLog: (message: string, type: string) => void
+  addLog: (message: string, type?: LogType) => void
   clearLogs: () => void
 }
 

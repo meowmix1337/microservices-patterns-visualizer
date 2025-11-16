@@ -5,6 +5,7 @@ import { COLORS, type Position } from '../../../constants/colors'
 import { useArchitecture } from '../../../contexts/ArchitectureContext'
 
 export type DependencyType = 'sync' | 'async' | 'cache'
+export type ServiceType = 'client' | 'service' | 'cache' | 'queue'
 
 export interface DependencyArrowProps {
   from: Position
@@ -14,6 +15,20 @@ export interface DependencyArrowProps {
   bidirectional?: boolean
   fromServiceId?: string
   toServiceId?: string
+  fromServiceType?: ServiceType
+  toServiceType?: ServiceType
+}
+
+/**
+ * Service box dimensions in percentage units (based on viewport)
+ * These are approximate half-widths and half-heights for edge calculation
+ */
+const SERVICE_BOX_DIMENSIONS = {
+  client: { halfWidth: 6.5, halfHeight: 3.5 },
+  service: { halfWidth: 8.7, halfHeight: 4.0 },
+  cache: { halfWidth: 7.3, halfHeight: 3.7 },
+  queue: { halfWidth: 7.3, halfHeight: 3.7 },
+  default: { halfWidth: 7.5, halfHeight: 3.8 }
 }
 
 function DependencyArrow({
@@ -23,7 +38,9 @@ function DependencyArrow({
   label,
   bidirectional = false,
   fromServiceId,
-  toServiceId
+  toServiceId,
+  fromServiceType = 'service',
+  toServiceType = 'service'
 }: DependencyArrowProps) {
   // Try to use architecture context if available (for hover highlights)
   let architecture: ReturnType<typeof useArchitecture> | null = null
@@ -31,6 +48,56 @@ function DependencyArrow({
     architecture = useArchitecture()
   } catch {
     // Context not available, that's okay
+  }
+
+  /**
+   * Calculate edge connection points based on service box positions and sizes
+   * This makes arrows start/end at box edges instead of centers
+   */
+  const calculateEdgePoints = (): { start: Position; end: Position } => {
+    const fromDims = SERVICE_BOX_DIMENSIONS[fromServiceType] || SERVICE_BOX_DIMENSIONS.default
+    const toDims = SERVICE_BOX_DIMENSIONS[toServiceType] || SERVICE_BOX_DIMENSIONS.default
+
+    // Calculate direction vector
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+
+    // Determine primary direction (horizontal vs vertical)
+    const isHorizontal = Math.abs(dx) > Math.abs(dy)
+
+    let startX = from.x
+    let startY = from.y
+    let endX = to.x
+    let endY = to.y
+
+    if (isHorizontal) {
+      // Horizontal flow - use left/right edges
+      if (dx > 0) {
+        // Target is to the right - use right edge of source, left edge of target
+        startX = from.x + fromDims.halfWidth
+        endX = to.x - toDims.halfWidth
+      } else {
+        // Target is to the left - use left edge of source, right edge of target
+        startX = from.x - fromDims.halfWidth
+        endX = to.x + toDims.halfWidth
+      }
+    } else {
+      // Vertical flow - use top/bottom edges
+      if (dy > 0) {
+        // Target is below - use bottom edge of source, top edge of target
+        startY = from.y + fromDims.halfHeight
+        endY = to.y - toDims.halfHeight
+      } else {
+        // Target is above - use top edge of source, bottom edge of target
+        startY = from.y - fromDims.halfHeight
+        endY = to.y + toDims.halfHeight
+      }
+    }
+
+    return {
+      start: { x: startX, y: startY },
+      end: { x: endX, y: endY }
+    }
   }
 
   // Get stroke width based on type
@@ -55,10 +122,12 @@ function DependencyArrow({
 
   // Calculate Bezier curve control points for smooth path
   const calculatePath = (): string => {
-    const startX = from.x
-    const startY = from.y
-    const endX = to.x
-    const endY = to.y
+    // Use edge points instead of center points
+    const edgePoints = calculateEdgePoints()
+    const startX = edgePoints.start.x
+    const startY = edgePoints.start.y
+    const endX = edgePoints.end.x
+    const endY = edgePoints.end.y
 
     // Calculate control points for smooth curve
     const dx = endX - startX
@@ -85,10 +154,12 @@ function DependencyArrow({
 
   // Calculate arrow head position and rotation
   const calculateArrowHead = (): { x: number; y: number; rotation: number } => {
-    const startX = from.x
-    const startY = from.y
-    const endX = to.x
-    const endY = to.y
+    // Use edge points for proper arrow head positioning
+    const edgePoints = calculateEdgePoints()
+    const startX = edgePoints.start.x
+    const startY = edgePoints.start.y
+    const endX = edgePoints.end.x
+    const endY = edgePoints.end.y
 
     const dx = endX - startX
     const dy = endY - startY
@@ -103,10 +174,28 @@ function DependencyArrow({
 
   // Calculate label position (midpoint of curve)
   const calculateLabelPosition = (): { x: number; y: number } => {
-    const midX = (from.x + to.x) / 2
-    const midY = (from.y + to.y) / 2
+    // Use edge points for more accurate label positioning
+    const edgePoints = calculateEdgePoints()
+    const midX = (edgePoints.start.x + edgePoints.end.x) / 2
+    const midY = (edgePoints.start.y + edgePoints.end.y) / 2
 
     return { x: midX, y: midY }
+  }
+
+  /**
+   * Calculate dynamic label background dimensions based on text length
+   * Font size is 2.5 units, character width ≈ 1.5 units for bold text
+   */
+  const calculateLabelDimensions = (text: string): { width: number; height: number } => {
+    const fontSize = 2.5
+    const charWidth = 1.5 // Approximate width per character at fontSize 2.5
+    const padding = 1.0 // Padding on each side
+
+    const textWidth = text.length * charWidth
+    const width = textWidth + (padding * 2)
+    const height = fontSize + 0.5 // Slight vertical padding
+
+    return { width, height }
   }
 
   // Get color based on dependency type
@@ -134,6 +223,7 @@ function DependencyArrow({
   const path = calculatePath()
   const arrowHead = calculateArrowHead()
   const labelPos = calculateLabelPosition()
+  const labelDims = label ? calculateLabelDimensions(label) : { width: 0, height: 0 }
   const color = getColor()
 
   // Create unique IDs for filters and markers to avoid conflicts
@@ -141,7 +231,7 @@ function DependencyArrow({
 
   return (
     <>
-      {/* Arrow paths layer (behind service boxes) */}
+      {/* Arrow paths layer (same level as service boxes for visibility) */}
       <svg
         className="dependency-arrow"
         viewBox="0 0 100 100"
@@ -153,7 +243,7 @@ function DependencyArrow({
           width: '100%',
           height: '100%',
           pointerEvents: 'none',
-          zIndex: 5,
+          zIndex: 9,
           overflow: 'visible'
         }}
       >
@@ -190,14 +280,27 @@ function DependencyArrow({
           </filter>
         </defs>
 
+        {/* White outline for contrast against semi-transparent boxes */}
+        <motion.path
+          d={path}
+          stroke="rgba(255, 255, 255, 0.3)"
+          strokeWidth={strokeWidth + 0.4}
+          strokeDasharray={getStrokeDashArray()}
+          strokeLinecap="round"
+          fill="none"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        />
+
         {/* Background glow path for enhanced visibility */}
         <motion.path
           d={path}
           stroke={color}
-          strokeWidth={strokeWidth + 0.2}
+          strokeWidth={strokeWidth + 0.25}
           strokeDasharray={getStrokeDashArray()}
           fill="none"
-          opacity={opacity * 0.3}
+          opacity={opacity * 0.4}
           filter={`url(#glow-${uniqueId})`}
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
@@ -293,12 +396,12 @@ function DependencyArrow({
             </filter>
           </defs>
 
-          {/* Label background for better readability */}
+          {/* Label background for better readability - dynamically sized */}
           <motion.rect
-            x={labelPos.x - 4}
-            y={labelPos.y - 1.5}
-            width="8"
-            height="3"
+            x={labelPos.x - labelDims.width / 2}
+            y={labelPos.y - labelDims.height / 2}
+            width={labelDims.width}
+            height={labelDims.height}
             rx="0.5"
             fill="rgba(15, 23, 42, 0.95)"
             stroke={color}

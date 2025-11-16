@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
-import DependencyArrow from '../../components/pattern/DependencyArrow'
+// import DependencyArrow from '../../components/pattern/DependencyArrow' // Removed - arrows hidden
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
 import Button from '../../components/ui/Button'
@@ -10,7 +10,7 @@ import { createSpeedDelay } from '../../utils/scenarioHelpers'
 import { useRequestResponseState } from './useRequestResponseState'
 import { REQUEST_RESPONSE_DEPENDENCIES } from './dependencies'
 import { ArchitectureProvider, buildDependencyMap } from '../../contexts/ArchitectureContext'
-import type { Position } from '../../constants/colors'
+import { type Position, gridToPosition } from '../../constants/colors'
 import {
   createSimpleRequestScenario,
   createCascadeRequestScenario,
@@ -22,12 +22,13 @@ export interface RequestResponsePatternProps {
   animationSpeed: number
 }
 
-// Position mapping for RequestResponse pattern
+// Position mapping for RequestResponse pattern using grid system for better spacing
+// Optimized for full-width layout - leftmost service near left edge, rightmost near right edge
 const POSITIONS: Record<string, Position> = {
-  client: { x: 15, y: 30 },
-  notesService: { x: 45, y: 30 },
-  tagsService: { x: 75, y: 50 },
-  userService: { x: 75, y: 10 }
+  client: gridToPosition(1, 3),      // Far left, slightly above middle (~16.25% from left)
+  notesService: gridToPosition(5, 3), // Center-left, same vertical level as client (~46.25%)
+  tagsService: gridToPosition(9, 5), // Far right, lower position (~76.25%)
+  userService: gridToPosition(9, 1)  // Far right, upper position (~76.25%)
 }
 
 export default function RequestResponsePattern({ animationSpeed }: RequestResponsePatternProps) {
@@ -157,7 +158,8 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
             />
 
             <div className="architecture">
-              {/* Render dependency arrows first (behind service boxes) */}
+              {/* Dependency arrows removed for cleaner view - focus on service positioning */}
+              {/*
               {REQUEST_RESPONSE_DEPENDENCIES.map((dep, index) => (
                 <DependencyArrow
                   key={`${dep.from}-${dep.to}-${index}`}
@@ -167,8 +169,11 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
                   label={dep.label}
                   fromServiceId={dep.from}
                   toServiceId={dep.to}
+                  fromServiceType={dep.fromServiceType}
+                  toServiceType={dep.toServiceType}
                 />
               ))}
+              */}
 
               <ServiceBox
                 name="Client"
