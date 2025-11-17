@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
-// import DependencyArrow from '../../components/pattern/DependencyArrow' // Removed - arrows hidden
+import SimpleArrow from '../../components/pattern/SimpleArrow'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
 import Button from '../../components/ui/Button'
@@ -159,22 +159,16 @@ export default function RequestResponsePattern({ animationSpeed }: RequestRespon
             />
 
             <div className="architecture">
-              {/* Dependency arrows removed for cleaner view - focus on service positioning */}
-              {/*
               {REQUEST_RESPONSE_DEPENDENCIES.map((dep, index) => (
-                <DependencyArrow
+                <SimpleArrow
                   key={`${dep.from}-${dep.to}-${index}`}
                   from={POSITIONS[dep.from]}
                   to={POSITIONS[dep.to]}
-                  type={dep.type}
+                  color="#3b82f6"
                   label={dep.label}
-                  fromServiceId={dep.from}
-                  toServiceId={dep.to}
-                  fromServiceType={dep.fromServiceType}
-                  toServiceType={dep.toServiceType}
+                  dashed={false}
                 />
               ))}
-              */}
 
               <ServiceBox
                 name="Client"
