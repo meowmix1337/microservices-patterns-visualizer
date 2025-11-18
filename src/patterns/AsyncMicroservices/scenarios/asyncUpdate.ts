@@ -1,13 +1,15 @@
 import type { Step } from '../../../hooks/useStepByStep.d'
 import type { UseAsyncMicroservicesStateReturn } from '../useAsyncMicroservicesState'
-import { POSITIONS } from '../../../constants/colors'
+import type { Position } from '../../../constants/colors'
 import type { MessageFlowData } from '../../../components/pattern/MessageFlow'
 import type { QueueMessage } from '../../../components/viewers/QueueViewer'
 
 export function createAsyncUpdateScenario(
   state: UseAsyncMicroservicesStateReturn,
-  speedDelay: (ms: number) => Promise<void>
+  speedDelay: (ms: number) => Promise<void>,
+  positions: Record<string, Position>
 ): Step[] {
+  const POSITIONS = positions
   // Store the newQueueMsg in a closure so we can reference it across steps
   let newQueueMsg: QueueMessage | null = null
 
