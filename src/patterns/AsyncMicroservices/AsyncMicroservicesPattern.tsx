@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import ServiceBox from '../../components/pattern/ServiceBox'
 import MessageFlow from '../../components/pattern/MessageFlow'
-import SimpleArrow from '../../components/pattern/SimpleArrow'
+// import SimpleArrow from '../../components/pattern/SimpleArrow' // Removed: exploring simpler dependency visualization
 import ControlPanel from '../../components/pattern/ControlPanel'
 import { InfoTabs } from '../../components/viewers'
 import { StepByStepControls } from '../../components/pattern'
@@ -107,7 +107,8 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
             />
 
             <div className="architecture">
-              {ASYNC_MICROSERVICES_DEPENDENCIES.map((dep, index) => (
+              {/* Arrows removed - dependencies are shown through animated message flows */}
+              {/* {ASYNC_MICROSERVICES_DEPENDENCIES.map((dep, index) => (
                 <SimpleArrow
                   key={`${dep.from}-${dep.to}-${index}`}
                   from={POSITIONS[dep.from]}
@@ -116,7 +117,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                   label={dep.label}
                   dashed={dep.type === 'async'}
                 />
-              ))}
+              ))} */}
 
               <ServiceBox
                 name="Client"

@@ -72,17 +72,35 @@ function ServiceBox({
   }, [architecture])
 
   // Determine if this service should be highlighted or dimmed
-  const isHighlighted = architecture?.hoveredService === serviceId
-  const isRelated = serviceId && architecture?.hoveredService && architecture.dependencies.get(serviceId)?.includes(architecture.hoveredService)
-  const isDimmed = architecture?.hoveredService && !isHighlighted && !isRelated
+  const hoveredService = architecture?.hoveredService
+  const isHovered = hoveredService === serviceId
 
-  // Animation variants based on hover state
-  const opacity = isDimmed ? 0.3 : 1
-  const scale = isHighlighted ? 1.05 : 1
+  // Check bidirectional connections:
+  // 1. Does the hovered service depend on this service? (this service is in hovered's dependencies)
+  // 2. Does this service depend on the hovered service? (hovered is in this service's dependencies)
+  const isConnected = !!(
+    hoveredService &&
+    serviceId &&
+    architecture?.dependencies && (
+      architecture.dependencies.get(hoveredService)?.includes(serviceId) ||
+      architecture.dependencies.get(serviceId)?.includes(hoveredService)
+    )
+  )
+
+  const isHighlighted = isHovered || isConnected
+  const isDimmed = hoveredService && !isHighlighted
+
+  // Build CSS classes for visual states
+  const cssClasses = [
+    'service-box',
+    isHovered && 'hovered',
+    isHighlighted && !isHovered && 'highlighted',
+    isDimmed && 'dimmed'
+  ].filter(Boolean).join(' ')
 
   const serviceBoxContent = (
     <motion.div
-      className="service-box"
+      className={cssClasses}
       data-type={type}
       style={{
         left: `${position.x}%`,
@@ -90,7 +108,7 @@ function ServiceBox({
         borderColor: getColor(),
       }}
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale, opacity }}
+      animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.2 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
