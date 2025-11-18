@@ -1,4 +1,4 @@
-import { memo, useState, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import './ServiceBox.css'
@@ -130,6 +130,38 @@ function ServiceBox({
 
   // If tooltip is provided, wrap with Radix UI Tooltip
   if (tooltip) {
+    // Build enhanced metadata that includes dependencies
+    const enhancedMetadata: TooltipMetadata[] = [...(tooltip.metadata || [])]
+
+    // Add dependency information if architecture context is available
+    if (architecture?.dependencies && serviceId) {
+      // Get services this service depends on
+      const dependsOn = architecture.dependencies.get(serviceId) || []
+
+      // Get services that depend on this service
+      const dependedBy: string[] = []
+      architecture.dependencies.forEach((deps, id) => {
+        if (deps.includes(serviceId)) {
+          dependedBy.push(id)
+        }
+      })
+
+      // Add to metadata
+      if (dependsOn.length > 0) {
+        enhancedMetadata.push({
+          label: 'Depends on',
+          value: dependsOn.join(', ')
+        })
+      }
+
+      if (dependedBy.length > 0) {
+        enhancedMetadata.push({
+          label: 'Depended by',
+          value: dependedBy.join(', ')
+        })
+      }
+    }
+
     return (
       <Tooltip.Provider delayDuration={200}>
         <Tooltip.Root>
@@ -143,9 +175,9 @@ function ServiceBox({
               side="top"
             >
               <div className="tooltip-description">{tooltip.description}</div>
-              {tooltip.metadata && tooltip.metadata.length > 0 && (
+              {enhancedMetadata.length > 0 && (
                 <div className="tooltip-metadata">
-                  {tooltip.metadata.map((item, index) => (
+                  {enhancedMetadata.map((item, index) => (
                     <div key={index} className="tooltip-metadata-item">
                       <span className="tooltip-metadata-label">{item.label}:</span>
                       <span className="tooltip-metadata-value">{item.value}</span>
