@@ -7,7 +7,7 @@ export interface MessageFlowData {
   id: number
   from: string
   to: string
-  type: 'http' | 'event' | 'cache'
+  type: 'http' | 'event' | 'cache' | 'db'
   label: string
   path: Position[]
   success?: boolean

@@ -3,20 +3,22 @@ import { motion } from 'framer-motion'
 import { Button, Card } from '../../ui'
 import CacheViewer, { type CacheData } from '../CacheViewer'
 import QueueViewer, { type QueueMessage } from '../QueueViewer'
+import OutboxViewer, { type OutboxEntry } from '../OutboxViewer'
 import Logs from '../Logs'
 import type { LogEntry } from '../../../hooks/useLogs'
 import './InfoTabs.css'
 
-export type TabType = 'logs' | 'cache' | 'queue'
+export type TabType = 'logs' | 'cache' | 'queue' | 'outbox'
 
 export interface InfoTabsProps {
-  cacheData: CacheData
-  queueMessages: QueueMessage[]
+  cacheData?: CacheData
+  queueMessages?: QueueMessage[]
+  outboxEntries?: OutboxEntry[]
   logs: LogEntry[]
   onClear?: () => void
 }
 
-export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: InfoTabsProps) {
+export default function InfoTabs({ cacheData, queueMessages, outboxEntries, logs, onClear }: InfoTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('logs')
   const [isMinimized, setIsMinimized] = useState<boolean>(false)
   const [isVisible, setIsVisible] = useState<boolean>(false)
@@ -108,30 +110,46 @@ export default function InfoTabs({ cacheData, queueMessages, logs, onClear }: In
               >
                 Logs
               </Button>
-              <Button
-                variant={activeTab === 'cache' ? 'primary' : 'ghost'}
-                size="small"
-                onClick={() => setActiveTab('cache')}
-                iconLeft="⚡"
-                className="tab-btn"
-              >
-                Cache
-              </Button>
-              <Button
-                variant={activeTab === 'queue' ? 'primary' : 'ghost'}
-                size="small"
-                onClick={() => setActiveTab('queue')}
-                iconLeft="📨"
-                className="tab-btn"
-              >
-                Queue
-              </Button>
+              {cacheData && (
+                <Button
+                  variant={activeTab === 'cache' ? 'primary' : 'ghost'}
+                  size="small"
+                  onClick={() => setActiveTab('cache')}
+                  iconLeft="⚡"
+                  className="tab-btn"
+                >
+                  Cache
+                </Button>
+              )}
+              {queueMessages && (
+                <Button
+                  variant={activeTab === 'queue' ? 'primary' : 'ghost'}
+                  size="small"
+                  onClick={() => setActiveTab('queue')}
+                  iconLeft="📨"
+                  className="tab-btn"
+                >
+                  Queue
+                </Button>
+              )}
+              {outboxEntries && (
+                <Button
+                  variant={activeTab === 'outbox' ? 'primary' : 'ghost'}
+                  size="small"
+                  onClick={() => setActiveTab('outbox')}
+                  iconLeft="📤"
+                  className="tab-btn"
+                >
+                  Outbox
+                </Button>
+              )}
             </div>
 
             <div className="tab-content">
               {activeTab === 'logs' && <Logs logs={logs} />}
-              {activeTab === 'cache' && <CacheViewer data={cacheData} />}
-              {activeTab === 'queue' && <QueueViewer messages={queueMessages} />}
+              {activeTab === 'cache' && cacheData && <CacheViewer data={cacheData} />}
+              {activeTab === 'queue' && queueMessages && <QueueViewer messages={queueMessages} />}
+              {activeTab === 'outbox' && outboxEntries && <OutboxViewer entries={outboxEntries} />}
             </div>
           </>
         )}

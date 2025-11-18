@@ -1,0 +1,210 @@
+.outbox-viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.outbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.outbox-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.entry-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 2px 8px;
+}
+
+.table-wrapper {
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.outbox-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: var(--bg-tertiary);
+}
+
+.outbox-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 1;
+}
+
+.outbox-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: var(--border-width) solid var(--border-color);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.outbox-table td {
+  padding: 10px;
+  border-bottom: var(--border-width) solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.outbox-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.outbox-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.outbox-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status-based row styling */
+.outbox-table tbody tr.status-pending {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+.outbox-table tbody tr.status-publishing {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.outbox-table tbody tr.status-published {
+  background: rgba(16, 185, 129, 0.05);
+  opacity: 0.7;
+}
+
+/* Cell-specific styles */
+.cell-id {
+  font-family: 'Courier New', monospace;
+  color: var(--text-secondary);
+  font-size: 10px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-event-type {
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.cell-payload {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-status {
+  min-width: 100px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  border: var(--border-width) solid;
+  text-transform: capitalize;
+}
+
+.status-pending .status-badge {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgb(251, 191, 36);
+  color: rgb(251, 191, 36);
+}
+
+.status-publishing .status-badge {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgb(59, 130, 246);
+  color: rgb(59, 130, 246);
+}
+
+.status-published .status-badge {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgb(16, 185, 129);
+  color: rgb(16, 185, 129);
+}
+
+.cell-time {
+  font-size: 10px;
+  color: var(--text-secondary);
+  min-width: 80px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+/* Brutalism theme adjustments */
+[data-theme="brutalism"] .outbox-table {
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="brutalism"] .status-badge {
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+/* Scrollbar styling */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
