@@ -28,6 +28,9 @@
   outline: none;
   transition: all 0.3s ease;
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 [data-theme="brutalism"] .ui-select {
