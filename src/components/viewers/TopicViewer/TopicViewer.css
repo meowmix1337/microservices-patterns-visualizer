@@ -1,0 +1,177 @@
+/**
+ * Topic Viewer Component Styles
+ * Displays active topics, subscriptions, and recent messages
+ */
+
+.topic-viewer {
+  background: var(--bg-secondary);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.topic-viewer-header {
+  padding: 16px;
+  border-bottom: var(--border-width) solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.topic-viewer-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.topic-viewer-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.topic-viewer-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Topics List */
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.topic-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 12px;
+}
+
+[data-theme="brutalism"] .topic-card {
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+.topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.topic-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.topic-message-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-sm);
+}
+
+.topic-subscribers {
+  margin-top: 8px;
+}
+
+.topic-subscribers-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.topic-subscribers-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.subscriber-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  background: var(--accent-primary);
+  color: white;
+  border-radius: var(--border-radius-sm);
+}
+
+[data-theme="brutalism"] .subscriber-badge {
+  border-radius: 0;
+  border: 1px solid var(--border-color);
+}
+
+/* Recent Messages */
+.recent-messages {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.recent-messages h4 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 10px;
+  font-size: 11px;
+}
+
+[data-theme="brutalism"] .message-item {
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+.message-topic-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: var(--accent-secondary);
+  color: white;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 6px;
+}
+
+.message-content {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.message-publisher {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .topic-viewer-content {
+    padding: 12px;
+  }
+
+  .topic-card {
+    padding: 10px;
+  }
+}
