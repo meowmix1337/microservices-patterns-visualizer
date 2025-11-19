@@ -144,8 +144,7 @@ export default function AsyncMicroservicesPattern({ animationSpeed }: AsyncMicro
                   description: "Main API service implementing cache-aside pattern for performance",
                   metadata: [
                     { label: "Type", value: "REST API" },
-                    { label: "Cache Strategy", value: "Cache-Aside" },
-                    { label: "Dependencies", value: "Redis, Tags Service, Kafka" }
+                    { label: "Cache Strategy", value: "Cache-Aside" }
                   ]
                 }}
               />

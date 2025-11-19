@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import './App.css'
 import { Sidebar } from './components/layout'
 import { CommandPalette, PatternInfoModal } from './components/features'
-import { AsyncMicroservicesPattern, RequestResponsePattern, getPatternById } from './patterns'
+import { AsyncMicroservicesPattern, RequestResponsePattern, OutboxPattern, getPatternById } from './patterns'
 import { ComingSoonPattern } from './components/shared'
 import { useTheme } from './contexts/ThemeContext'
 
@@ -39,6 +39,8 @@ function App() {
         return <AsyncMicroservicesPattern animationSpeed={animationSpeed} />
       case 'request-response':
         return <RequestResponsePattern animationSpeed={animationSpeed} />
+      case 'outbox-pattern':
+        return <OutboxPattern animationSpeed={animationSpeed} />
       default:
         // For all placeholder patterns, use ComingSoonPattern with pattern data
         return (

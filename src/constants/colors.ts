@@ -11,11 +11,13 @@ export interface Colors {
   // Service types
   client: string
   service: string
+  // Cache is used both as service type and message type
   cache: string
   queue: string
   // Message types
   http: string
   event: string
+  db: string
   // States
   success: string
   error: string
@@ -42,6 +44,7 @@ export const COLORS: Colors = {
   // Message types
   http: '#3b82f6',
   event: '#f59e0b',
+  db: '#10b981',
 
   // States
   success: '#10b981',
