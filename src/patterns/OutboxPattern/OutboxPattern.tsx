@@ -80,9 +80,6 @@ export default function OutboxPattern({ animationSpeed }: OutboxPatternProps) {
           <div className="pattern-sidebar">
             <div className="control-panel panel">
               <h3>📤 Outbox Pattern</h3>
-              <p className="description">
-                Ensures reliable event publishing by storing events in the same database transaction as business data.
-              </p>
 
               <div className="scenarios">
                 <h4>Scenarios</h4>
