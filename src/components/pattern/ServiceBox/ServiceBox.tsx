@@ -5,8 +5,8 @@ import './ServiceBox.css'
 import { COLORS, type Position } from '../../../constants/colors'
 import { useArchitecture } from '../../../contexts/ArchitectureContext'
 
-export type ServiceType = 'client' | 'service' | 'cache' | 'queue'
-export type ServiceStatus = 'healthy' | 'down'
+export type ServiceType = 'client' | 'service' | 'cache' | 'queue' | 'gateway'
+export type ServiceStatus = 'healthy' | 'down' | 'warning'
 
 export interface TooltipMetadata {
   label: string
@@ -55,6 +55,7 @@ function ServiceBox({
 
   const getColor = (): string => {
     if (status === 'down') return COLORS.error
+    if (status === 'warning') return COLORS.warning
     return COLORS[type] || COLORS.default
   }
 
@@ -122,7 +123,7 @@ function ServiceBox({
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
         >
-          {status === 'down' ? '🔴 DOWN' : '⚠️'}
+          {status === 'down' ? '🔴 DOWN' : status === 'warning' ? '⚠️ DEGRADED' : '⚠️'}
         </motion.div>
       )}
     </motion.div>
