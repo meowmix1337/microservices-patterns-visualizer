@@ -20,8 +20,8 @@ export interface RetryPatternProps {
 }
 
 const POSITIONS: Record<string, Position> = {
-  client: gridToPosition(2, 4),
-  service: gridToPosition(6, 4)
+  client: gridToPosition(2, 3),
+  service: gridToPosition(6, 3)
 }
 
 export default function RetryPattern({ animationSpeed }: RetryPatternProps) {
